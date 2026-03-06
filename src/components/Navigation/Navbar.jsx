@@ -1,36 +1,74 @@
 import React from 'react'
-import logo from '../../images/cleantrack.png'
+import wastebin from '../../images/wastebin.png'
+//import logo from '../../images/cleantrack.png'
 
 function Navbar() {
     return (
         <div>
-            <nav class="navbar navbar-expand-lg bg-body-tertiary">
-                <div class="container-fluid">
-                    <img src={logo} alt='logo' width={60} height={30} />
-                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                        <span class="navbar-toggler-icon"></span>
-                    </button>
-                    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <nav class="navbar navbar-expand-lg " style={{ border: 'none', position: 'fixed', top: 0, left: 0, right: 0, zIndex: '1000',height:'5rem',backgroundColor: "#f8f9fa",borderBottom: "1px solid #ddd"}}>
+                <div style={{ display: 'flex', alignItems: 'center' ,padding:'0.5rem 1rem ',borderRight: "1px solid #ddd",borderBottom: "1px solid #ddd",width:'15rem',height:'5rem'}}>
+                    <a class="navbar-brand" href="/" style={{ color: 'white', display: 'flex', alignItems: 'center' }}>
+                        <img src={wastebin} alt="Logo" style={{ width: '40px', height: '40px', marginRight: '0.5rem' }} />
+                        <h4 style={{ margin: 0 ,color:'#000',borderWidth:'1px',}}>CleanTrack</h4>
+                    </a>
+                </div>
+
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    {/*<ul class="navbar-nav me-auto mb-2 mb-lg-0">
                             <li class="nav-item">
-                                <a class="nav-link active" aria-current="page" href="/">Home</a>
+                                <a class="nav-link active" aria-current="page" href="/" style={{ color: 'white' }}>Home</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="/">Link</a>
+                                <a class="nav-link" href="/" style={{ color: 'white' }}>Link</a>
                             </li>
-                            <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle" href="/" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            {/* <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="/" role="button" data-bs-toggle="dropdown" aria-expanded="false" style={{ color: 'white' }}>
                                     Dropdown
                                 </a>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="/">Action</a></li>
+                                    <li><a class="dropdown-item" href="/">Another action</a></li>
+                                    <li><hr class="dropdown-divider"></hr></li>
+                                    <li><a class="dropdown-item" href="/">Something else here</a></li>
+                                </ul>
+                            </li> 
 
-                            </li>
-
-                        </ul>
+                        </ul> */}
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', marginLeft: '1rem' }}>
                         <form class="d-flex" role="search">
-                            <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" />
-                            <button class="btn btn-outline-success" type="submit">Search</button>
+
+                            <div style={{ position: "relative", width: "20rem" }}>
+                                <input
+                                    className="form-control me-2"
+                                    type="search"
+                                    placeholder="Search"
+                                    aria-label="Search"
+                                    style={{ borderRadius: "50px", paddingLeft: "35px" }}
+                                />
+
+                                <i
+                                    className="fa-solid fa-magnifying-glass"
+                                    style={{
+                                        position: "absolute",
+                                        left: "10px",
+                                        top: "50%",
+                                        transform: "translateY(-50%)",
+                                        color: "gray"
+                                    }}
+                                ></i>
+                            </div>
+                            <button class="btn btn-outline-success mx-3" type="submit" >Search</button>
                         </form>
+
+                        <div className="nav-user-options" style={{ marginLeft: '1rem', display: 'flex', alignItems: 'center', marginRight: '1rem' }}>
+                            <i class="fa-regular fa-bell me-5" style={{fontSize: '1.25rem'}}></i>
+                            <i class="fa-solid fa-gear me-5" style={{fontSize: '1.25rem'}}></i>
+                            <div style={{ display: 'flex', alignItems: 'center', borderRadius: '50px', backgroundColor: '#48A111', padding: '0.5rem 1rem', color: 'white', width: '2.5rem', height: '2.5rem', justifyContent: 'center' }}>
+                                <span style={{ fontSize: '1.25rem', fontWeight: 'bold' }}>X</span>
+                            </div>
+                        </div>
                     </div>
+
                 </div>
             </nav>
         </div>
