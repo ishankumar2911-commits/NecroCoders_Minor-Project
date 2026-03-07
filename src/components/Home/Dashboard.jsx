@@ -98,7 +98,7 @@ export default function Dashboard() {
             }}
           >
             <img src={require(`../../images/whitescreenwastebin.png`)} alt="Collection Schedule" style={{ width:'23rem',
-              height:'26rem', }} />
+              height:'30rem', }} />
           </div>
 
           {/* Another component

@@ -5,6 +5,7 @@ import Dashboard from './components/Home/Dashboard'
 import SideNavbar from './components/Navigation/SideNavbar'
 import BinStatusPage from './components/BinStatus/BinStatusHome'
 import SanitationStaffPage from './components/SanitationStaffs/SanitationStaffPage'
+import Reports from './components/Reports/ReportsPage'
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
         <Route path='/' element={<Dashboard />}/>
         <Route path='/bin-status' element={<BinStatusPage />}/>
         <Route path='/staffs' element={<SanitationStaffPage />}/>
+        <Route path='/reports' element={<Reports/>}/>
       </Routes>
     </BrowserRouter>
   )
