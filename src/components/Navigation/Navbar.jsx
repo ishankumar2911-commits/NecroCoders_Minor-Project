@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 
 function Navbar() {
     const [showProfileModal, setShowProfileModal] = React.useState(false);
-    const naviagate = useNavigate();
+    const navigate = useNavigate();
 
     return (
         <div>
@@ -65,11 +65,38 @@ function Navbar() {
                             <button className="btn btn-outline-success mx-3" type="submit" >Search</button>
                         </form>
 
-                        <div className="nav-user-options" style={{ marginLeft: '1rem', display: 'flex', alignItems: 'center', marginRight: '1rem', cursor: 'pointer' }} onClick={() => setShowProfileModal(true)}>
+                        <div className="nav-user-options" style={{ marginLeft: '1rem', display: 'flex', alignItems: 'center', marginRight: '1rem', cursor: 'pointer' }} >
                             <i className="fa-regular fa-bell me-5" style={{ fontSize: '1.25rem' }}></i>
                             <i className="fa-solid fa-gear me-5" style={{ fontSize: '1.25rem' }}></i>
-                            <div style={{ display: 'flex', alignItems: 'center', borderRadius: '50px', backgroundColor: '#48A111', padding: '0.5rem 1rem', color: 'white', width: '2.5rem', height: '2.5rem', justifyContent: 'center' }}>
+                            <div
+                                onClick={showProfileModal ? () => setShowProfileModal(false) : () => setShowProfileModal(true)}
+                                style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    borderRadius: '50%',
+                                    backgroundColor: '#48A111',
+                                    color: 'white',
+                                    width: '2.5rem',
+                                    height: '2.5rem',
+                                    justifyContent: 'center',
+                                    cursor: "pointer"
+                                }}
+                            >
                                 <span style={{ fontSize: '1.25rem', fontWeight: 'bold' }}>X</span>
+
+                                {/* Modal */}
+                                {showProfileModal &&
+                                    <ProfileModal
+                                        onGoToSettings={() => {
+                                            setShowProfileModal(false)
+                                            navigate('/settings')
+                                        }}
+                                        onLogout={() => {
+                                            console.log("logout")
+                                        }}
+                                    />
+                                }
+
                             </div>
                         </div>
 
@@ -77,19 +104,6 @@ function Navbar() {
 
                 </div>
             </nav>
-            {showProfileModal &&
-                <div
-                style={{
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                }}>
-
-                    <ProfileModal showProfileModal={showProfileModal} setShowProfileModal={setShowProfileModal} onGoToSettings={() => {
-                        setShowProfileModal(false);
-                        naviagate('/settings');
-                    }} />
-                </div>}
         </div>
     )
 }

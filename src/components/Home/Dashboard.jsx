@@ -109,6 +109,7 @@ export default function Dashboard() {
             flex: 1,
             display: "flex",
             flexDirection: "column",
+            justifyContent: "space-between",
             gap: "1rem",
             minWidth: 0
           }}
