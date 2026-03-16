@@ -1,14 +1,26 @@
+import { useNavigate } from 'react-router-dom';
 import BinStatusCard from './BinStatusCard';
 import CollectionOverview from './CollectionOverview';
 import WasteMap from './Wastemap';
+import { useEffect } from 'react';  
 
 export default function Dashboard() {
+  const navigate= useNavigate();
+  const token=localStorage.getItem('token');
   const cards = [
     { title: "Total Bins", value: 230, img: "wastebin.png" },
     { title: "Full Bins", value: 56, img: "fullbin.png" },
     { title: "Collections Today", value: 6, img: "truck.png" },
     { title: "Active Alerts", value: 4, img: "alert.png" }
   ]
+  // useEffect(() => {
+  //   console.log(token);
+  //   if(!token){
+  //     navigate('/login');
+  //   }
+  // // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [token])
+  
 
   return (
     <div style={{ marginTop: '5rem', marginLeft: '16rem', padding: '1rem' }}>
@@ -98,7 +110,7 @@ export default function Dashboard() {
             }}
           >
             <img src={require(`../../images/whitescreenwastebin.png`)} alt="Collection Schedule" style={{ width:'23rem',
-              height:'30rem', }} />
+              height:'30rem',opacity: 0.5 }} />
           </div>
 
           {/* Another component
