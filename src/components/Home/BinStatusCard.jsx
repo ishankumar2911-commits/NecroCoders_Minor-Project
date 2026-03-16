@@ -14,7 +14,8 @@ export default function BinStatusCard() {
   return (
     <div
       style={{
-        width: "24rem",
+        width: "100%",
+        maxWidth: "24rem",
         background: "#f3f4f6",
         padding: "20px",
         borderRadius: "12px",
@@ -25,7 +26,7 @@ export default function BinStatusCard() {
 
       {bins.map((bin, index) => (
         <div key={index} style={{ marginBottom: "18px" }}>
-          
+
           {/* Area + Percentage */}
           <div
             style={{

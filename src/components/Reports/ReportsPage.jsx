@@ -133,7 +133,9 @@ function Reports() {
         border: "1px solid #e5e5e5",
         borderRadius: "10px",
         padding: "20px",
-        height: "320px"
+        height: "320px",
+        width: "100%",
+        boxSizing: "border-box"
     };
 
     const chartOptions = {
@@ -142,8 +144,15 @@ function Reports() {
     };
 
     return (
-        <div style={{ marginTop: "5rem", marginLeft: "16rem", padding: "20px" }}>
-
+        <div
+            style={{
+                marginTop: "5rem",
+                marginLeft: "16rem",
+                width: "calc(100% - 16rem)",
+                padding: "20px",
+                boxSizing: "border-box"
+            }}
+        >
             {/* Download Button */}
             <div
                 style={{
@@ -182,42 +191,42 @@ function Reports() {
                 <div
                     style={{
                         display: "grid",
-                        gridTemplateColumns: "repeat(auto-fit,minmax(350px,1fr))",
+                        gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
                         gap: "20px"
                     }}
                 >
 
                     <div style={cardStyle}>
                         <h6>Collections Today</h6>
-                        <div style={{ height: "250px" }}>
+                        <div style={{ height: "250px", width: "100%" }}>
                             <Bar data={collectionsToday} options={chartOptions} />
                         </div>
                     </div>
 
                     <div style={cardStyle}>
                         <h6>Bin Status Distribution</h6>
-                        <div style={{ height: "250px" }}>
+                        <div style={{ height: "250px", width: "100%" }}>
                             <Pie data={binStatus} options={chartOptions} />
                         </div>
                     </div>
 
                     <div style={cardStyle}>
                         <h6>Weekly Waste Trend</h6>
-                        <div style={{ height: "250px" }}>
+                        <div style={{ height: "250px", width: "100%" }}>
                             <Line data={weeklyWaste} options={chartOptions} />
                         </div>
                     </div>
 
                     <div style={cardStyle}>
                         <h6>Most Frequently Emptied Bins</h6>
-                        <div style={{ height: "250px" }}>
+                        <div style={{ height: "250px", width: "100%" }}>
                             <Bar data={frequentBins} options={chartOptions} />
                         </div>
                     </div>
 
                     <div style={cardStyle}>
                         <h6>Zone Wise Waste Collection</h6>
-                        <div style={{ height: "250px" }}>
+                        <div style={{ height: "250px", width: "100%" }}>
                             <Doughnut data={zoneWaste} options={chartOptions} />
                         </div>
                     </div>
