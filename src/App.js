@@ -8,6 +8,7 @@ import BinStatusPage from './components/BinStatus/BinStatusHome'
 import SanitationStaffPage from './components/SanitationStaffs/SanitationStaffPage'
 import Reports from './components/Reports/ReportsPage'
 import Login from './components/LoginPage/Login'
+import SettingsPage from './components/Settings/SettingsPage'
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
           <Route path='/bin-status' element={<BinStatusPage />} />
           <Route path='/staffs' element={<SanitationStaffPage />} />
           <Route path='/reports' element={<Reports />} />
+          <Route path='/settings' element={<SettingsPage />} />
         </Route>
 
       </Routes>

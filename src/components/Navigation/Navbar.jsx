@@ -1,15 +1,20 @@
 import React from 'react'
 import wastebin from '../../images/wastebin.png'
+import ProfileModal from './ProfileModal';
+import { useNavigate } from 'react-router-dom';
 //import logo from '../../images/cleantrack.png'
 
 function Navbar() {
+    const [showProfileModal, setShowProfileModal] = React.useState(false);
+    const naviagate = useNavigate();
+
     return (
         <div>
-            <nav className="navbar navbar-expand-lg " style={{ border: 'none', position: 'fixed', top: 0, left: 0, right: 0, zIndex: '1000',height:'5rem',backgroundColor: "#f8f9fa",borderBottom: "1px solid #ddd"}}>
-                <div style={{ display: 'flex', alignItems: 'center' ,padding:'0.5rem 1rem ',borderRight: "1px solid #ddd",borderBottom: "1px solid #ddd",width:'15rem',height:'5rem'}}>
+            <nav className="navbar navbar-expand-lg " style={{ border: 'none', position: 'fixed', top: 0, left: 0, right: 0, zIndex: '1000', height: '5rem', backgroundColor: "#f8f9fa", borderBottom: "1px solid #ddd" }}>
+                <div style={{ display: 'flex', alignItems: 'center', padding: '0.5rem 1rem ', borderRight: "1px solid #ddd", borderBottom: "1px solid #ddd", width: '15rem', height: '5rem' }}>
                     <a className="navbar-brand" href="/" style={{ color: 'white', display: 'flex', alignItems: 'center' }}>
                         <img src={wastebin} alt="Logo" style={{ width: '40px', height: '40px', marginRight: '0.5rem' }} />
-                        <h4 style={{ margin: 0 ,color:'#000',borderWidth:'1px',}}>CleanTrack</h4>
+                        <h4 style={{ margin: 0, color: '#000', borderWidth: '1px', }}>CleanTrack</h4>
                     </a>
                 </div>
 
@@ -60,17 +65,31 @@ function Navbar() {
                             <button className="btn btn-outline-success mx-3" type="submit" >Search</button>
                         </form>
 
-                        <div className="nav-user-options" style={{ marginLeft: '1rem', display: 'flex', alignItems: 'center', marginRight: '1rem' }}>
-                            <i className="fa-regular fa-bell me-5" style={{fontSize: '1.25rem'}}></i>
-                            <i className="fa-solid fa-gear me-5" style={{fontSize: '1.25rem'}}></i>
+                        <div className="nav-user-options" style={{ marginLeft: '1rem', display: 'flex', alignItems: 'center', marginRight: '1rem', cursor: 'pointer' }} onClick={() => setShowProfileModal(true)}>
+                            <i className="fa-regular fa-bell me-5" style={{ fontSize: '1.25rem' }}></i>
+                            <i className="fa-solid fa-gear me-5" style={{ fontSize: '1.25rem' }}></i>
                             <div style={{ display: 'flex', alignItems: 'center', borderRadius: '50px', backgroundColor: '#48A111', padding: '0.5rem 1rem', color: 'white', width: '2.5rem', height: '2.5rem', justifyContent: 'center' }}>
                                 <span style={{ fontSize: '1.25rem', fontWeight: 'bold' }}>X</span>
                             </div>
                         </div>
+
                     </div>
 
                 </div>
             </nav>
+            {showProfileModal &&
+                <div
+                style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                }}>
+
+                    <ProfileModal showProfileModal={showProfileModal} setShowProfileModal={setShowProfileModal} onGoToSettings={() => {
+                        setShowProfileModal(false);
+                        naviagate('/settings');
+                    }} />
+                </div>}
         </div>
     )
 }
