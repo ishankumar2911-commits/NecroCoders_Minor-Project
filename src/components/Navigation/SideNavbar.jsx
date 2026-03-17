@@ -1,5 +1,5 @@
-import React from "react";
 import { Link, useLocation } from "react-router-dom";
+import React, { useState, useEffect } from "react";
 
 export default function SideNavbar() {
   const location = useLocation();
@@ -11,8 +11,19 @@ export default function SideNavbar() {
     { to: "/alerts", icon: <i className="fa-solid fa-bell mx-3"></i>, label: "Alerts" },
     { to: "/settings", icon: <i className="fa-solid fa-gear mx-3"></i>, label: "Settings" },
     { to: "/staffs", icon: <i className="fa-solid fa-users mx-3"></i>, label: "Sanitation Staff" },
-    
+
   ];
+  const [collapsed, setCollapsed] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setCollapsed(window.innerWidth < 1200);
+    };
+
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   return (
     <nav
@@ -21,7 +32,7 @@ export default function SideNavbar() {
         top: "5rem",
         left: 0,
         height: "calc(100vh - 56px)",
-        width: "15rem",
+        width: collapsed ? "5rem" : "clamp(15rem, 18vw, 12rem)",
         backgroundColor: "#f8f9fa",
         borderRight: "1px solid #ddd",
         display: "flex",
@@ -71,14 +82,15 @@ export default function SideNavbar() {
           >
             <div
               style={{
-                width: "80%",
+                width: "90%",
                 backgroundColor: isActive ? "rgba(72,161,17,0.2)" : "",
-                padding: "0.5rem",
+                padding: collapsed ? "0.5rem" : "0.5rem 1rem",
                 marginLeft: "0.5rem",
                 borderRadius: "1rem",
+                justifyContent: collapsed ? "center" : "flex-start",
               }}
             >
-              {icon} {label}
+              {icon} {!collapsed && label}
             </div>
           </Link>
         );

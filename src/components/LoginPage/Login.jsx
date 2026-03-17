@@ -11,7 +11,7 @@ function Login() {
   };
 
   const handleOutlookLogin = () => {
-    alert("Outlook login integration goes here");
+    window.location.href = "http://localhost:5000/auth/microsoft";
   };
 
   return (
@@ -220,7 +220,19 @@ function Login() {
             Sign in with Outlook
           </button>
 
+          <div
+            style={{
+              marginTop: "20px",
+              textAlign: "center",
+              fontSize: "11px",
+              color: "#aaa",
+              lineHeight: "1.4"
+            }}
+          >
+            © 2024 CleanTrack • Team NecroCoders
+          </div>
         </div>
+
       </div>
 
     </div>

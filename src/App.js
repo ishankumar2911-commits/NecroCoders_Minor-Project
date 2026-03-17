@@ -9,6 +9,7 @@ import SanitationStaffPage from './components/SanitationStaffs/SanitationStaffPa
 import Reports from './components/Reports/ReportsPage'
 import Login from './components/LoginPage/Login'
 import SettingsPage from './components/Settings/SettingsPage'
+import Bell from './components/Notifications/Bell'
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
           <Route path='/staffs' element={<SanitationStaffPage />} />
           <Route path='/reports' element={<Reports />} />
           <Route path='/settings' element={<SettingsPage />} />
+          <Route path='/alerts' element={<Bell />} />
         </Route>
 
       </Routes>

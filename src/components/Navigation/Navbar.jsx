@@ -66,8 +66,8 @@ function Navbar() {
                         </form>
 
                         <div className="nav-user-options" style={{ marginLeft: '1rem', display: 'flex', alignItems: 'center', marginRight: '1rem', cursor: 'pointer' }} >
-                            <i className="fa-regular fa-bell me-5" style={{ fontSize: '1.25rem' }}></i>
-                            <i className="fa-solid fa-gear me-5" style={{ fontSize: '1.25rem' }}></i>
+                            <i className="fa-regular fa-bell me-5" style={{ fontSize: '1.25rem' }} onClick={()=>{navigate('/alerts')}}></i>
+                            <i className="fa-solid fa-gear me-5" style={{ fontSize: '1.25rem' }} onClick={()=>{navigate('/settings')}}></i>
                             <div
                                 onClick={showProfileModal ? () => setShowProfileModal(false) : () => setShowProfileModal(true)}
                                 style={{
