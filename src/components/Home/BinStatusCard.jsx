@@ -1,15 +1,21 @@
 
 import React from "react";
 
-export default function BinStatusCard() {
+export default function BinStatusCard({ bins }) {
 
-  const bins = [
-    { area: "Park Avenue", percent: 90, color: "#e74c3c" },
-    { area: "Main Street", percent: 75, color: "#f1c40f" },
-    { area: "2nd Ave", percent: 60, color: "#2ecc71" },
-    { area: "Elm Park", percent: 45, color: "#2ecc71" },
-    { area: "Union Square", percent: 30, color: "#2ecc71" }
-  ];
+  const getColor = (status) => {
+    if (status === "empty") return "#2ecc71"; // green
+    if (status === "half-full"|| status==="half") return "#f1c40f";
+    if (status === "full") return "#e74c3c"; // red
+    return "#bdc3c7"; // default gray
+  };
+  // const bins = [
+  //   { area: "Park Avenue", percent: 90, color: "#e74c3c" },
+  //   { area: "Main Street", percent: 75, color: "#f1c40f" },
+  //   { area: "2nd Ave", percent: 60, color: "#2ecc71" },
+  //   { area: "Elm Park", percent: 45, color: "#2ecc71" },
+  //   { area: "Union Square", percent: 30, color: "#2ecc71" }
+  // ];
 
   return (
     <div
@@ -24,7 +30,7 @@ export default function BinStatusCard() {
     >
       <h3 style={{ marginBottom: "20px" }}>Bin Status</h3>
 
-      {bins.map((bin, index) => (
+      {bins.slice(0,10).map((bin, index) => (
         <div key={index} style={{ marginBottom: "18px" }}>
 
           {/* Area + Percentage */}
@@ -36,18 +42,18 @@ export default function BinStatusCard() {
               marginBottom: "6px"
             }}
           >
-            <span style={{ fontWeight: "600" }}>{bin.area}</span>
+            <span style={{ fontWeight: "600" }}>{bin.location}</span>
 
             <span
               style={{
-                background: bin.color,
+                background: getColor(bin.status),
                 color: "white",
                 padding: "2px 10px",
                 borderRadius: "20px",
                 fontSize: "12px"
               }}
             >
-              {bin.percent}%
+              {Math.round((bin.currentFillLevel/bin.capacity )* 100)}%
             </span>
           </div>
 
@@ -62,9 +68,9 @@ export default function BinStatusCard() {
           >
             <div
               style={{
-                width: `${bin.percent}%`,
+                width: `${Math.min(100, Math.max(0, (bin.currentFillLevel/bin.capacity ) * 100))}%`,
                 height: "100%",
-                background: bin.color
+                background: getColor(bin.status)
               }}
             ></div>
           </div>

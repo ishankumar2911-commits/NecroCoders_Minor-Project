@@ -21,7 +21,7 @@ ChartJS.register(
   Legend
 );
 
-function CollectionOverview() {
+function CollectionOverview({ bins }) {
 
   const data = {
     labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],

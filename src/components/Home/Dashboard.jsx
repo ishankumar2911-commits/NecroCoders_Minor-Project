@@ -2,16 +2,62 @@ import { useNavigate } from 'react-router-dom';
 import BinStatusCard from './BinStatusCard';
 import CollectionOverview from './CollectionOverview';
 import WasteMap from './Wastemap';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { useSocket } from '../../context/SocketContext';
 
 export default function Dashboard() {
 
   const navigate = useNavigate();
   const token = localStorage.getItem('token');
+  const { socket } = useSocket();
+
+  const [bins, setBins] = useState([]);
+
+  useEffect(() => {
+    if (!socket) return;
+
+    socket.on("binUpdated", (data) => {
+      console.log("Bin update:", data);
+
+      setBins((prev) =>
+        prev.map((bin) =>
+          bin._id === data._id
+            ? { ...bin, ...data }
+            : bin
+        )
+      );
+    });
+
+    return () => {
+      socket.off("binUpdated");
+    };
+  }, [socket]);
+
+  //fetch bins on component mount
+  useEffect(() => {
+    const fetchBins = async () => {
+      try {
+        const res = await fetch("http://localhost:5000/api/bins", {
+          headers: {
+            "Content-Type": "application/json",
+            //"auth-token": token
+          }
+        });
+
+        const data = await res.json();
+        setBins(data);
+      } catch (err) {
+        console.error("Error fetching bins:", err);
+      }
+    };
+
+    fetchBins();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const cards = [
-    { title: "Total Bins", value: 230, img: "wastebin.png" },
-    { title: "Full Bins", value: 56, img: "fullbin.png" },
+    { title: "Total Bins", value: bins.length, img: "wastebin.png" },
+    { title: "Full Bins", value: bins.filter(bin => bin.status === 'full').length, img: "fullbin.png" },
     { title: "Collections Today", value: 6, img: "truck.png" },
     { title: "Active Alerts", value: 4, img: "alert.png" }
   ]
@@ -88,7 +134,7 @@ export default function Dashboard() {
         {/* LEFT SIDE */}
         <div style={{ flex: 2, minWidth: 0 }}>
 
-          <WasteMap />
+          <WasteMap bins={bins} />
 
           <div
             style={{
@@ -98,7 +144,7 @@ export default function Dashboard() {
               padding: "1rem",
             }}
           >
-            <CollectionOverview />
+            <CollectionOverview bins={bins} />
           </div>
 
         </div>
@@ -115,7 +161,7 @@ export default function Dashboard() {
           }}
         >
 
-          <BinStatusCard />
+          <BinStatusCard bins={bins}/>
 
           <div
             style={{
