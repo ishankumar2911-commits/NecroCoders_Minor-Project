@@ -30,7 +30,7 @@ export default function BinStatusCard({ bins }) {
     >
       <h3 style={{ marginBottom: "20px" }}>Bin Status</h3>
 
-      {bins.slice(0,10).map((bin, index) => (
+      {bins.slice(0,5).map((bin, index) => (
         <div key={index} style={{ marginBottom: "18px" }}>
 
           {/* Area + Percentage */}
@@ -77,6 +77,9 @@ export default function BinStatusCard({ bins }) {
 
         </div>
       ))}
+      <a style={{ fontSize: "12px", color: "#555", marginTop: "10px" }} href="/bin-status">
+        View More
+      </a>
     </div>
   );
 }

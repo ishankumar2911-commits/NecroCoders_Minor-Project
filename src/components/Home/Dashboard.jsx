@@ -9,9 +9,9 @@ export default function Dashboard() {
 
   const navigate = useNavigate();
   const token = localStorage.getItem('token');
-  const { socket } = useSocket();
+  const { socket, bins, setBins, fetchBins } = useSocket();
 
-  const [bins, setBins] = useState([]);
+  
 
   useEffect(() => {
     if (!socket) return;
@@ -33,27 +33,11 @@ export default function Dashboard() {
     };
   }, [socket]);
 
-  //fetch bins on component mount
-  useEffect(() => {
-    const fetchBins = async () => {
-      try {
-        const res = await fetch("http://localhost:5000/api/bins", {
-          headers: {
-            "Content-Type": "application/json",
-            //"auth-token": token
-          }
-        });
-
-        const data = await res.json();
-        setBins(data);
-      } catch (err) {
-        console.error("Error fetching bins:", err);
-      }
-    };
-
-    fetchBins();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  // //fetch bins on component mount
+  // useEffect(() => {
+  //   fetchBins();
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, []);
 
   const cards = [
     { title: "Total Bins", value: bins.length, img: "wastebin.png" },

@@ -150,7 +150,7 @@ export default function WasteMap({ bins }) {
             >
               {console.log("Rendering marker for bin:", bin)}
               <Popup>
-                Bin {bin._id} <br />
+                Bin {bin.binCode} <br />
                 Bin Location: {bin.location} <br />
                 Fill Level: {bin.currentFillLevel} / {bin.capacity} <br />
                 Status: {bin.status}
