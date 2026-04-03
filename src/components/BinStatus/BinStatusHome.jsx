@@ -1,13 +1,18 @@
 import React, { useState } from "react";
 import { useSocket } from "../../context/SocketContext";
 
+
 function BinStatusPage() {
- 
+
   const [selectedAuthority, setSelectedAuthority] = useState(null);
   const [message, setMessage] = useState("");
   const { socket, bins, setBins } = useSocket();
+  const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || "http://localhost:5000";
+  const [selectedBin, setSelectedBin] = useState(null);
+  const [authorities, setAuthorities] = useState([]);
+  const [selectedAuth, setSelectedAuth] = useState("");
 
-  React.useEffect(()=>{console.log(selectedAuthority)},[selectedAuthority])
+  React.useEffect(() => { console.log(selectedAuthority) }, [selectedAuthority])
 
 
   const sendMessage = async () => {
@@ -53,6 +58,33 @@ function BinStatusPage() {
     return percentB - percentA; // descending (Full → Empty)
   });
 
+  const assignExistingBins = async (binID, authority) => {
+    const response = await fetch(`${BACKEND_URL}/api/bins/assign-authority/${binID}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        authorityId: authority._id
+      })
+    });
+  }
+
+  //new authority and new bin
+  const assignNewBinToAuthority = async (location, authority) => {
+    const response = await fetch(`${BACKEND_URL}/api/bins`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        location: location,
+        capacity: 100,
+        assignedAuthority: authority
+      })
+    });
+  }
+
   return (
     <div style={{ marginTop: '5rem', marginLeft: '16rem', padding: '1rem' }}>
       <h4 style={{ color: '#25671E' }}>Bin Status Dashboard</h4>
@@ -86,14 +118,30 @@ function BinStatusPage() {
               <td>{bin.location}</td>
               <td>{(bin.currentFillLevel / bin.capacity * 100).toFixed(0)}%</td>
               <td>{getStatus(bin.currentFillLevel)}</td>
-              <td>{bin.authority.name || "Pankaj"}</td>
               <td>
+                {<div style={{ display: 'flex', alignItems: 'center', }} >
+                  {bin.authority.name || "Pankaj"}
+                  <button
+                    style={{ marginLeft: '0.5rem', padding: '0.2rem 0.4rem', fontSize: '0.7rem' }}
+                    onClick={() => setSelectedBin(bin)}
+
+                  >
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.1rem' }}>
+                      <i class="fa-solid fa-user-tie"></i>
+                      <p style={{ fontSize: '0.55rem' }}>Change</p>
+                    </div>
+                  </button>
+                </div>}
+              </td>
+              <td style={{ display: 'flex', gap: '0.5rem' }}>
                 <button
                   className="msg-btn"
                   onClick={() => setSelectedAuthority(bin.authority)}
                 >
                   Message
                 </button>
+
+
               </td>
             </tr>
           ))}

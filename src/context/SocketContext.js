@@ -33,6 +33,7 @@ export const SocketProvider = ({ children }) => {
 
             const data = await res.json();
             setBins(data);
+            console.log("Fetched bins:", data);
         } catch (err) {
             console.error("Error fetching bins:", err);
         }
