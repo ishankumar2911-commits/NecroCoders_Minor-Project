@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useSocket } from "../../context/SocketContext";
-
+import CreateAuthorityForm from "./CreateAuthorityForm";
 
 function BinStatusPage() {
 
@@ -11,8 +11,17 @@ function BinStatusPage() {
   const [selectedBin, setSelectedBin] = useState(null);
   const [authorities, setAuthorities] = useState([]);
   const [selectedAuth, setSelectedAuth] = useState("");
+  const [mode, setMode] = useState("");
 
   React.useEffect(() => { console.log(selectedAuthority) }, [selectedAuthority])
+  React.useEffect(() => {
+    if (selectedBin) {
+      fetch(`${BACKEND_URL}/api/staffs`)
+        .then(res => res.json())
+        .then(data => setAuthorities(data));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedBin]);
 
 
   const sendMessage = async () => {
@@ -119,19 +128,67 @@ function BinStatusPage() {
               <td>{(bin.currentFillLevel / bin.capacity * 100).toFixed(0)}%</td>
               <td>{getStatus(bin.currentFillLevel)}</td>
               <td>
-                {<div style={{ display: 'flex', alignItems: 'center', }} >
-                  {bin.authority.name || "Pankaj"}
-                  <button
-                    style={{ marginLeft: '0.5rem', padding: '0.2rem 0.4rem', fontSize: '0.7rem' }}
-                    onClick={() => setSelectedBin(bin)}
-
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    gap: "0.5rem"
+                  }}
+                >
+                  {/* Authority Name */}
+                  <span
+                    style={{
+                      fontWeight: "500",
+                      color: "#333"
+                    }}
                   >
-                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.1rem' }}>
-                      <i class="fa-solid fa-user-tie"></i>
-                      <p style={{ fontSize: '0.55rem' }}>Change</p>
-                    </div>
+                    {bin.authority?.name || "Not Assigned"}
+                  </span>
+
+                  {/* Change Button */}
+                  <button
+                    onClick={() => {
+                      setSelectedBin(bin);
+                      setMode(""); // reset mode
+                    }}
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      padding: "0.3rem 0.5rem",
+                      borderRadius: "6px",
+                      border: "1px solid #ddd",
+                      backgroundColor: "#f8f9fa",
+                      cursor: "pointer",
+                      transition: "all 0.2s ease"
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.backgroundColor = "#e6f4ea";
+                      e.currentTarget.style.borderColor = "#25671E";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = "#f8f9fa";
+                      e.currentTarget.style.borderColor = "#ddd";
+                    }}
+                  >
+                    <i
+                      className="fa-solid fa-user-tie"
+                      style={{ fontSize: "0.9rem", color: "#25671E" }}
+                    ></i>
+
+                    <span
+                      style={{
+                        fontSize: "0.55rem",
+                        marginTop: "2px",
+                        color: "#555"
+                      }}
+                    >
+                      Change
+                    </span>
                   </button>
-                </div>}
+                </div>
               </td>
               <td style={{ display: 'flex', gap: '0.5rem' }}>
                 <button
@@ -165,6 +222,96 @@ function BinStatusPage() {
               <button onClick={sendMessage}>Send</button>
               <button onClick={() => setSelectedAuthority(null)}>Cancel</button>
             </div>
+          </div>
+        </div>
+      )}
+      {selectedBin && (
+        <div className="modal">
+          <div className="modal-content">
+
+            <h3>Manage Authority for {selectedBin.binCode}</h3>
+
+            {/* STEP 1: Choose mode */}
+            {!mode && (
+              <div style={{ display: "flex", gap: "1rem" }}>
+                <button onClick={() => setMode("existing")}>
+                  Choose Existing
+                </button>
+
+                <button onClick={() => setMode("new")}>
+                  Create New
+                </button>
+              </div>
+            )}
+
+            {/* STEP 2: Existing Authority */}
+            {mode === "existing" && (
+              <>
+                <select
+                  onChange={(e) => setSelectedAuth(e.target.value)}
+                  style={{ marginTop: "1rem" }}
+                >
+                  <option value="">Select Authority</option>
+                  {authorities.map((auth) => (
+                    <option key={auth._id} value={auth._id}>
+                      {auth.name}
+                    </option>
+                  ))}
+                </select>
+
+                <button
+                  style={{ marginTop: "1rem" }}
+                  onClick={
+                    async () => {
+                      assignExistingBins(selectedBin._id, authorities.find(a => a._id.toString() === selectedAuth));
+                      // await fetch(
+                      //   `${BACKEND_URL}/api/bins/assign-authority/${selectedBin._id}`,
+                      //   {
+                      //     method: "PUT",
+                      //     headers: { "Content-Type": "application/json" },
+                      //     body: JSON.stringify({ authorityId: selectedAuth })
+                      //   }
+                      // );
+
+                      // update UI
+                      setBins(prev =>
+                        prev.map(b =>
+                          b._id === selectedBin._id
+                            ? { ...b, authority: authorities.find(a => a._id === selectedAuth) }
+                            : b
+                        )
+                      );
+
+                      setSelectedBin(null);
+                      setMode("");
+                    }}
+                >
+                  Assign
+                </button>
+              </>
+            )}
+
+            {/* STEP 3: Create New Authority */}
+            {mode === "new" && (
+              <CreateAuthorityForm
+                BACKEND_URL={BACKEND_URL}
+                selectedBin={selectedBin}
+                setSelectedBin={setSelectedBin}
+                setBins={setBins}
+                authorities={authorities}
+                setAuthorities={setAuthorities}
+              />
+            )}
+
+            <button
+              style={{ marginTop: "1rem" }}
+              onClick={() => {
+                setSelectedBin(null);
+                setMode("");
+              }}
+            >
+              Cancel
+            </button>
           </div>
         </div>
       )}
