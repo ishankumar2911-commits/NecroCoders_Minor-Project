@@ -138,3 +138,19 @@ font-weight:bold;
 color:#e74c3c;
 font-weight:bold;
 }
+
+.form-control:focus {
+  border-color: #28a745;
+  box-shadow: 0 0 0 0.25rem rgba(40, 167, 69, 0.25);
+}
+
+.bin-row {
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.bin-row:hover {
+  transform: scale(1.01);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  outline: 2px solid #25671E;
+}

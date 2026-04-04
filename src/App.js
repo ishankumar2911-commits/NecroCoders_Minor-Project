@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 
 import Layout from './components/Layout'
@@ -10,27 +10,41 @@ import Reports from './components/Reports/ReportsPage'
 import Login from './components/LoginPage/Login'
 import SettingsPage from './components/Settings/SettingsPage'
 import Bell from './components/Notifications/Bell'
+import AlertNotification from './components/AlertNotification/AlertNotification'
 
 function App() {
+  const [alert, setAlert] = useState(null);
+  const showAlert = (message, type) => {
+    setAlert({
+      msg: message,
+      type: type
+    })
+    setTimeout(() => {
+      setAlert(null);
+    }, 1500)
+  }
   return (
-    <BrowserRouter>
-      <Routes>
+    <>
+      <AlertNotification alert={alert} />
+      <BrowserRouter>
+        <Routes>
 
-        {/* Login page without navbar */}
-        <Route path='/login' element={<Login />} />
+          {/* Login page without navbar */}
+          <Route path='/login' element={<Login showAlert={showAlert} />} />
 
-        {/* Pages with navbar + sidebar */}
-        <Route element={<Layout />}>
-          <Route path='/' element={<Dashboard />} />
-          <Route path='/bin-status' element={<BinStatusPage />} />
-          <Route path='/staffs' element={<SanitationStaffPage />} />
-          <Route path='/reports' element={<Reports />} />
-          <Route path='/settings' element={<SettingsPage />} />
-          <Route path='/alerts' element={<Bell />} />
-        </Route>
+          {/* Pages with navbar + sidebar */}
+          <Route element={<Layout showAlert={showAlert} />}>
+            <Route path='/' element={<Dashboard showAlert={showAlert} />} />
+            <Route path='/bin-status' element={<BinStatusPage showAlert={showAlert} />} />
+            <Route path='/staffs' element={<SanitationStaffPage showAlert={showAlert} />} />
+            <Route path='/reports' element={<Reports showAlert={showAlert} />} />
+            <Route path='/settings' element={<SettingsPage showAlert={showAlert} />} />
+            <Route path='/alerts' element={<Bell showAlert={showAlert} />} />
+          </Route>
 
-      </Routes>
-    </BrowserRouter>
+        </Routes>
+      </BrowserRouter>
+    </>
   )
 }
 

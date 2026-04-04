@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useSocket } from "../../context/SocketContext";
 import CreateAuthorityForm from "./CreateAuthorityForm";
 
-function BinStatusPage() {
+function BinStatusPage({ showAlert }) {
 
   const [selectedAuthority, setSelectedAuthority] = useState(null);
   const [message, setMessage] = useState("");
@@ -12,14 +12,69 @@ function BinStatusPage() {
   const [authorities, setAuthorities] = useState([]);
   const [selectedAuth, setSelectedAuth] = useState("");
   const [mode, setMode] = useState("");
+  const [showAddBinModal, setShowAddBinModal] = useState(false);
+  const [createBinCode, setCreateBinCode] = useState("");
+  const [location, setLocation] = useState("");
+  const [capacity, setCapacity] = useState(100);
+  const [assignedAuthority, setAssignedAuthority] = useState("");
+  const [addMode, setAddMode] = useState("");
+  const [lat, setLat] = useState(null);
+  const [lng, setLng] = useState(null);
+  const [activeBinId, setActiveBinId] = useState(null);
+
+  React.useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(position => {
+        setLat(position.coords.latitude);
+        setLng(position.coords.longitude);
+      });
+    } else {
+      alert("Geolocation is not supported by this browser.");
+    }
+  }, []);
+
+
+  const handleAddBin = async (location, capacity, authority) => {
+
+
+    const response = await fetch(`${BACKEND_URL}/api/bins/add-bin`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        location,
+        capacity,
+        authority,
+        locationCoordinates: {
+          type: "Point",
+          coordinates: [lng, lat]
+        }
+      })
+    });
+
+    console.log(response);
+
+    if (response.ok) {
+      const newBin = await response.json();
+      setBins(prev => [...prev, newBin]);
+
+
+    }
+    setShowAddBinModal(false);
+    setLocation("");
+    setCapacity("");
+    setAssignedAuthority("");
+    showAlert("Bin added successfully", "success");
+  };
 
   React.useEffect(() => { console.log(selectedAuthority) }, [selectedAuthority])
   React.useEffect(() => {
-    if (selectedBin) {
-      fetch(`${BACKEND_URL}/api/staffs`)
-        .then(res => res.json())
-        .then(data => setAuthorities(data));
-    }
+
+    fetch(`${BACKEND_URL}/api/staffs`)
+      .then(res => res.json())
+      .then(data => setAuthorities(data));
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedBin]);
 
@@ -77,27 +132,68 @@ function BinStatusPage() {
         authorityId: authority._id
       })
     });
+    if (response.ok) {
+      showAlert("Authority assigned successfully", "success");
+    }
   }
 
-  //new authority and new bin
-  const assignNewBinToAuthority = async (location, authority) => {
-    const response = await fetch(`${BACKEND_URL}/api/bins`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        location: location,
-        capacity: 100,
-        assignedAuthority: authority
-      })
-    });
-  }
+  const handleDeleteBin = async (binId) => {
+    try {
+      const res = await fetch(`${BACKEND_URL}/api/bins/${binId}`, {
+        method: "DELETE"
+      });
+
+      if (res.ok) {
+        setBins(prev => prev.filter(b => b._id !== binId));
+        showAlert("Bin deleted successfully", "success");
+      }
+    } catch (err) {
+      console.error(err);
+      showAlert("Failed to delete bin", "error");
+    }
+  };
+
+  // //new authority and new bin
+  // const assignNewBinToAuthority = async (location, authority) => {
+  //   const response = await fetch(`${BACKEND_URL}/api/bins`, {
+  //     method: "POST",
+  //     headers: {
+  //       "Content-Type": "application/json"
+  //     },
+  //     body: JSON.stringify({
+  //       location: location,
+  //       capacity: 100,
+  //       assignedAuthority: authority
+  //     })
+  //   });
+  // }
 
   return (
     <div style={{ marginTop: '5rem', marginLeft: '16rem', padding: '1rem' }}>
-      <h4 style={{ color: '#25671E' }}>Bin Status Dashboard</h4>
+      <div style={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        marginBottom: "1rem"
+      }}>
+        <h4 style={{ color: '#25671E' }}>Bin Status Dashboard</h4>
+        <button
+          style={{
+            padding: "0.5rem 1rem",
+            backgroundColor: "#25671E",
+            color: "#fff",
+            border: "none",
+            borderRadius: "5px",
+            cursor: "pointer",
 
+          }}
+          onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = "#48A111" }}
+          onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "#25671E" }}
+          onClick={() => setShowAddBinModal(true)}
+        >
+          + Add Bin
+        </button>
+      </div>
       <table className="bin-table">
         <thead>
           <tr>
@@ -114,6 +210,8 @@ function BinStatusPage() {
           {sortedBins.map((bin) => (
             <tr
               key={bin._id}
+              className='bin-row'
+              onClick={() => setActiveBinId(bin._id)}
               style={{
                 backgroundColor:
                   (bin.currentFillLevel / bin.capacity) * 100 > 80
@@ -121,6 +219,14 @@ function BinStatusPage() {
                     : (bin.currentFillLevel / bin.capacity) * 100 > 40
                       ? "#fff3cd"   // yellow (Half)
                       : "#d4edda"   // green (Empty)
+              }}
+              onMouseEnter={(e) => {
+                if (activeBinId !== bin._id) {
+                  e.currentTarget.style.opacity = "0.85";
+                }
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.opacity = "1";
               }}
             >
               <td>{bin.binCode}</td>
@@ -133,7 +239,8 @@ function BinStatusPage() {
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "space-between",
-                    gap: "0.5rem"
+                    gap: "0.5rem",
+                    width: '70%'
                   }}
                 >
                   {/* Authority Name */}
@@ -190,15 +297,40 @@ function BinStatusPage() {
                   </button>
                 </div>
               </td>
-              <td style={{ display: 'flex', gap: '0.5rem' }}>
+              <td style={{ display: 'flex', gap: '0.5rem', width: "100%" }}>
+                <>
                 <button
                   className="msg-btn"
-                  onClick={() => setSelectedAuthority(bin.authority)}
+                  onClick={(e) => {
+                    e.stopPropagation(); // VERY IMPORTANT
+                    setSelectedAuthority(bin.authority);
+                  }}
                 >
                   Message
                 </button>
 
+                
+                    <button
+                      style={{
+                        backgroundColor: "#dc3545",
+                        color: "#fff",
+                        border: "none",
+                        padding: "0.3rem 0.6rem",
+                        borderRadius: "5px",
+                        cursor: "pointer",
+                        visibility: activeBinId === bin._id ? "visible" : "hidden"
 
+                      }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDeleteBin(bin._id);
+                      }}
+                    >
+                      <i className="fa-solid fa-trash" style={{ fontSize: "0.9rem" }}></i>
+                    </button>
+                    
+                  </>
+                
               </td>
             </tr>
           ))}
@@ -312,6 +444,107 @@ function BinStatusPage() {
             >
               Cancel
             </button>
+          </div>
+        </div>
+      )}
+      {showAddBinModal && (
+        <div className="modal">
+          <div className="modal-content">
+            <h3>Add New Bin</h3>
+            <form >
+              <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                <div style={{ fontSize: "0.8rem", color: "#555" }}>
+                  {createBinCode} Bin Code will be auto-generated. You can edit it later if needed.
+                </div>
+                <input
+                  value={location}
+                  onChange={(e) => setLocation(e.target.value)}
+                  type="text"
+                  name="location"
+                  placeholder="Location"
+                  required
+                />
+                <input
+                  value={capacity}
+                  onChange={(e) => setCapacity(e.target.value)}
+                  type="number"
+                  name="capacity"
+                  placeholder="Capacity"
+                  max={1500}
+                  required
+                />
+                {/* <select name="authority"
+                  value={assignedAuthority}
+                  onChange={(e) => setAssignedAuthority(e.target.value)}
+                >
+                  <option value="">Select Authority (optional)</option>
+                  {authorities.map((auth) => (
+                    <option key={auth._id} value={auth._id}>
+                      {auth.name}
+                    </option>
+                  ))}
+                </select> */}
+                <label style={{ marginTop: "0.5rem", display: "block" }}>Assign Authority (optional)</label>
+                {/* STEP 1: Choose mode */}
+                {(addMode === "" || !addMode) && (
+                  <div style={{ display: "flex", gap: "1rem" }}>
+                    <button onClick={() => setAddMode("existing")}>
+                      Choose Existing
+                    </button>
+
+                    <button onClick={() => setAddMode("new")}>
+                      Create New
+                    </button>
+                  </div>
+                )}
+
+                {/* STEP 2: Existing Authority */}
+                {addMode === "existing" && (
+                  <select
+                    value={assignedAuthority}
+                    onChange={(e) => setAssignedAuthority(e.target.value)}
+                  >
+                    <option value="">Select Authority</option>
+                    {authorities.map((auth) => (
+                      <option key={auth._id} value={auth._id}>
+                        {auth.name}
+                      </option>
+                    ))}
+                  </select>
+                )}
+
+                {/* STEP 3: Create New Authority */}
+                {addMode === "new" && (
+                  <CreateAuthorityForm
+                    BACKEND_URL={BACKEND_URL}
+                    setAuthorities={setAuthorities}
+                    authorities={authorities}
+                    onSuccess={(newAuth) => {
+                      setAssignedAuthority(newAuth._id); // auto select
+                      setAddMode("existing"); // switch back
+                    }}
+                    addinBin={true}
+                  />
+                )}
+
+              </div>
+            </form>
+            <div style={{ display: "flex", gap: "1rem" }}>
+              <button style={{ marginTop: "1rem" }} onClick={(e) => {
+                e.preventDefault();
+                handleAddBin(location, capacity, assignedAuthority);
+              }}>
+                Add Bin
+              </button>
+              <button
+                style={{ marginTop: "1rem" }}
+                onClick={() => { setShowAddBinModal(false); setAddMode("") }}
+              >
+                Cancel
+              </button>
+            </div>
+
+
           </div>
         </div>
       )}
