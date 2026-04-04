@@ -1,17 +1,26 @@
 import React, { useState } from "react";
 
-function Login() {
+function Login({showAlert}) {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleLogin = (e) => {
+
+  const handleLogin = async (e) => {
     e.preventDefault();
-    console.log(email, password);
-  };
+    showAlert("Invalid credentials. Please try again.", "danger");
+  }
 
   const handleOutlookLogin = () => {
     window.location.href = "http://localhost:5000/auth/microsoft";
+    if (window.location.href.includes("error=access_denied")) {
+      showAlert("Microsoft login failed. Please try again.", "danger");
+    }else {
+      setTimeout(() => {
+        showAlert("Logged in successfully with Microsoft!", "success");
+      }, 1000);
+    }
+
   };
 
   return (
@@ -29,7 +38,7 @@ function Login() {
       {/* LEFT IMAGE SECTION */}
       <div
         style={{
-          flex: "1.2",
+          flex: 6.6,
           backgroundImage:
             "url('https://plus.unsplash.com/premium_vector-1718815211233-10dfdda70419?q=80&w=1074&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')",
           backgroundSize: "cover",
@@ -38,7 +47,7 @@ function Login() {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          color: "white"
+          color: "white",
         }}
       >
 
@@ -75,7 +84,7 @@ function Login() {
       {/* RIGHT LOGIN SECTION */}
       <div
         style={{
-          flex: "1",
+          flex: 3.4,
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
@@ -229,7 +238,7 @@ function Login() {
               lineHeight: "1.4"
             }}
           >
-            © 2024 CleanTrack • Team NecroCoders
+            © 2026 CleanTrack • Team NecroCoders
           </div>
         </div>
 

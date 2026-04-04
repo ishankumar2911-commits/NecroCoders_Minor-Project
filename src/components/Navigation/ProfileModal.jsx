@@ -1,9 +1,23 @@
 import React from "react";
 
-function ProfileModal({ onLogout, onGoToSettings }) {
+function ProfileModal({ onLogout, onGoToSettings,name }) {
+    const getName = (fullName) => {
+        if (!fullName) return "";
+        const nameParts = fullName.trim().split(" ");   
+        if (nameParts.length === 1) {
+            return nameParts[0].charAt(0).toUpperCase(); 
+        } else {
+            return (
+                nameParts[0]+" "+
+                nameParts[1]
+            );
+        }
+    };
+
+
     return (
         <div style={modalStyle}>
-            <p style={nameStyle}>John Doe</p>
+            <p style={nameStyle}>{getName(name)}</p>
 
             <hr style={{ margin: "10px 0" ,color: "#25671E"}} />
 

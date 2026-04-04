@@ -10,7 +10,7 @@ function SanitationStaffPage({ showAlert }) {
   //   { id: "SW104", name: "Kavita Rao", area: "Hospital Road", tasks: 15, status: "Present" }
   // ];
 
-  
+
   const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || "http://localhost:5000";
   const [staffs, setStaffs] = React.useState([]);
   const [activeDropdown, setActiveDropdown] = React.useState(null);
@@ -26,6 +26,7 @@ function SanitationStaffPage({ showAlert }) {
 
     const response = await fetch(`${BACKEND_URL}/api/staffs`, {
       method: "POST",
+      include: "credentials",
       headers: {
         "Content-Type": "application/json"
       },
@@ -53,6 +54,7 @@ function SanitationStaffPage({ showAlert }) {
     if (showAddStaffModal) {
       fetch(`${BACKEND_URL}/api/bins/unassigned`, {
         method: "GET",
+        credentials: "include",
         headers: {
           "Content-Type": "application/json"
         }
@@ -80,7 +82,7 @@ function SanitationStaffPage({ showAlert }) {
     return () => document.removeEventListener("click", handleClickOutside);
   }, []);
 
-  const taskCounts = staffs.reduce((acc, staff) => {
+  const taskCounts = staffs?.reduce((acc, staff) => {
     return acc + (staff.completedTasks || 0);
   }, 0);
 
@@ -96,7 +98,13 @@ function SanitationStaffPage({ showAlert }) {
   React.useEffect(() => {
     const fetchStaffs = async () => {
       try {
-        const response = await fetch(`${BACKEND_URL}/api/staffs`);
+        const response = await fetch(`${BACKEND_URL}/api/staffs`, {
+          method: "GET",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json"
+          }
+        });
         const data = await response.json();
         setStaffs(data);
         console.log("Fetched staff data:", data);
@@ -114,6 +122,7 @@ function SanitationStaffPage({ showAlert }) {
       return;
     } else {
       const res = await fetch(`${BACKEND_URL}/api/staffs/${staffId}`, {
+        credentials: "include",
         method: "DELETE"
       });
       console.log("Delete response:", res);

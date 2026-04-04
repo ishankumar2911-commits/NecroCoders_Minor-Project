@@ -2,12 +2,38 @@ import React from 'react'
 import wastebin from '../../images/wastebin.png'
 import ProfileModal from './ProfileModal';
 import { useNavigate } from 'react-router-dom';
+import { useSocket } from '../../context/SocketContext';
 //import logo from '../../images/cleantrack.png'
 
 function Navbar() {
     const [showProfileModal, setShowProfileModal] = React.useState(false);
     const navigate = useNavigate();
     const [search, setSearch] = React.useState("");
+    const { user, setUser } = useSocket();
+
+    const handleLogout = async () => {
+        await fetch("http://localhost:5000/api/auth/logout", {
+            method: "GET",
+            credentials: "include"
+        });
+
+        // clear user state
+        setUser(null);
+
+        // redirect to login page
+        window.location.href = "/login";
+    }
+
+    const getName = (userName) => {
+        if (!userName) return "";
+        const parts = userName.split(" ");
+        if (parts.length === 1) return parts[0].charAt(0).toUpperCase();
+        return (parts[0].charAt(0) + parts[1].charAt(0)).toUpperCase();
+    }
+
+    React.useEffect(() => {
+        console.log("Current user in Navbar:", user);
+    }, [user]);
 
     const handleSearch = (e) => {
         e.preventDefault();
@@ -91,7 +117,7 @@ function Navbar() {
                                     cursor: "pointer"
                                 }}
                             >
-                                <span style={{ fontSize: '1.25rem', fontWeight: 'bold' }}>X</span>
+                                <span style={{ fontSize: '1.25rem', fontWeight: 'bold' }}>{getName(user?.name)}</span>
 
                                 {/* Modal */}
                                 {showProfileModal &&
@@ -100,9 +126,8 @@ function Navbar() {
                                             setShowProfileModal(false)
                                             navigate('/settings')
                                         }}
-                                        onLogout={() => {
-                                            console.log("logout")
-                                        }}
+                                        onLogout={handleLogout}
+                                        name={user?.name}
                                     />
                                 }
 

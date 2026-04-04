@@ -1,10 +1,20 @@
 import React, { useState } from "react";
+import { useSocket } from '../../context/SocketContext';
+import { getRoles } from "@testing-library/dom";
 
 const SettingsPage = () => {
+    const { user } = useSocket();
+
+    const getName=(userName)=>{
+        if(!userName) return "";
+        const parts = userName.split(" ");
+        if(parts.length === 1) return parts[0].charAt(0).toUpperCase();
+        return parts[0];
+    }
     const userProfile = {
-        name: "John Doe",
-        email: "john.doe@university.edu",
-        password: "********",
+        name: getName(user?.name),
+        email: user?.email || "Email not provided",
+        role: user?.role || [],
     };
 
     const [notificationsEnabled, setNotificationsEnabled] = useState(true);
@@ -20,7 +30,7 @@ const SettingsPage = () => {
                 <h5 style={headingStyle}>Profile</h5>
                 <p><strong>Name:</strong> {userProfile.name}</p>
                 <p><strong>Email:</strong> {userProfile.email}</p>
-                <p><strong>Password:</strong> {userProfile.password}</p>
+                <p><strong>Role:</strong> {userProfile.role}</p>
             </section>
 
             {/* Notifications */}

@@ -6,6 +6,7 @@ const CreateAuthorityForm = ({ BACKEND_URL, selectedBin, setSelectedBin, setBins
     const createAuthority = async () => {
         const res = await fetch(`${BACKEND_URL}/api/staffs`, {
             method: "POST",
+            credentials: "include",
             headers: {
                 "Content-Type": "application/json"
             },
@@ -18,6 +19,7 @@ const CreateAuthorityForm = ({ BACKEND_URL, selectedBin, setSelectedBin, setBins
         if (!addinBin && selectedBin) {
             await fetch(`${BACKEND_URL}/api/bins/assign-authority/${selectedBin._id}`, {
                 method: "PUT",
+                credentials: "include",
                 headers: {
                     "Content-Type": "application/json"
                 },

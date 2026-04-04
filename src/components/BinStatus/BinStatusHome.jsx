@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useSocket } from "../../context/SocketContext";
 import CreateAuthorityForm from "./CreateAuthorityForm";
 
@@ -32,6 +32,10 @@ function BinStatusPage({ showAlert }) {
       alert("Geolocation is not supported by this browser.");
     }
   }, []);
+
+  useEffect(() => {
+    if (!Array.isArray(bins)) return null;
+  }, [bins]);
 
 
   const handleAddBin = async (location, capacity, authority) => {
@@ -71,7 +75,7 @@ function BinStatusPage({ showAlert }) {
   React.useEffect(() => { console.log(selectedAuthority) }, [selectedAuthority])
   React.useEffect(() => {
 
-    fetch(`${BACKEND_URL}/api/staffs`)
+    fetch(`${BACKEND_URL}/api/staffs`,{credentials: "include"})
       .then(res => res.json())
       .then(data => setAuthorities(data));
 
@@ -83,6 +87,7 @@ function BinStatusPage({ showAlert }) {
     try {
       const response = await fetch("http://localhost:5000/api/sms/send-sms", {
         method: "POST",
+        credentials: "include",
         headers: {
           "Content-Type": "application/json"
         },
@@ -125,6 +130,7 @@ function BinStatusPage({ showAlert }) {
   const assignExistingBins = async (binID, authority) => {
     const response = await fetch(`${BACKEND_URL}/api/bins/assign-authority/${binID}`, {
       method: "PUT",
+      credentials: "include",
       headers: {
         "Content-Type": "application/json"
       },
@@ -140,6 +146,7 @@ function BinStatusPage({ showAlert }) {
   const handleDeleteBin = async (binId) => {
     try {
       const res = await fetch(`${BACKEND_URL}/api/bins/${binId}`, {
+        credentials: "include",
         method: "DELETE"
       });
 
@@ -299,38 +306,38 @@ function BinStatusPage({ showAlert }) {
               </td>
               <td style={{ display: 'flex', gap: '0.5rem', width: "100%" }}>
                 <>
-                <button
-                  className="msg-btn"
-                  onClick={(e) => {
-                    e.stopPropagation(); // VERY IMPORTANT
-                    setSelectedAuthority(bin.authority);
-                  }}
-                >
-                  Message
-                </button>
+                  <button
+                    className="msg-btn"
+                    onClick={(e) => {
+                      e.stopPropagation(); // VERY IMPORTANT
+                      setSelectedAuthority(bin.authority);
+                    }}
+                  >
+                    Message
+                  </button>
 
-                
-                    <button
-                      style={{
-                        backgroundColor: "#dc3545",
-                        color: "#fff",
-                        border: "none",
-                        padding: "0.3rem 0.6rem",
-                        borderRadius: "5px",
-                        cursor: "pointer",
-                        visibility: activeBinId === bin._id ? "visible" : "hidden"
 
-                      }}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleDeleteBin(bin._id);
-                      }}
-                    >
-                      <i className="fa-solid fa-trash" style={{ fontSize: "0.9rem" }}></i>
-                    </button>
-                    
-                  </>
-                
+                  <button
+                    style={{
+                      backgroundColor: "#dc3545",
+                      color: "#fff",
+                      border: "none",
+                      padding: "0.3rem 0.6rem",
+                      borderRadius: "5px",
+                      cursor: "pointer",
+                      visibility: activeBinId === bin._id ? "visible" : "hidden"
+
+                    }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDeleteBin(bin._id);
+                    }}
+                  >
+                    <i className="fa-solid fa-trash" style={{ fontSize: "0.9rem" }}></i>
+                  </button>
+
+                </>
+
               </td>
             </tr>
           ))}

@@ -12,6 +12,7 @@ export const useSocket = () => {
 export const SocketProvider = ({ children }) => {
     const [socket, setSocket] = useState(null);
     const [bins, setBins] = useState([]);
+    const [user, setUser] = useState(null);
 
     useEffect(() => {
         const newSocket = io("http://localhost:5000");
@@ -25,6 +26,7 @@ export const SocketProvider = ({ children }) => {
     const fetchBins = async () => {
         try {
             const res = await fetch("http://localhost:5000/api/bins", {
+                credentials: "include",
                 headers: {
                     "Content-Type": "application/json",
                     //"auth-token": token
@@ -32,25 +34,45 @@ export const SocketProvider = ({ children }) => {
             });
 
             const data = await res.json();
-            setBins(data);
+            setBins(data||[]);
             console.log("Fetched bins:", data);
         } catch (err) {
             console.error("Error fetching bins:", err);
         }
     };
 
-    useEffect(() => {
-        fetchBins()
-    }, [])
+    const getUser = async () => {
+        const res = await fetch("http://localhost:5000/api/auth/user", {
+            credentials: "include" // 🔥 VERY IMPORTANT
+        });
 
-    return (
-        <SocketContext.Provider value={{
-            socket,
-            bins,
-            setBins,
-            fetchBins
-        }}>
-            {children}
-        </SocketContext.Provider>
-    );
-};
+        const data = await res.json();
+        setUser(data.user);
+        return data;
+    };
+
+        useEffect(() => {
+            fetchBins();
+            getUser().then(data => {
+                if (data.success) {
+                    console.log("Logged in user:", data.user);
+                } else {
+                    console.log("Not logged in");
+                }
+            });
+        }, []);
+    
+        return (
+            <SocketContext.Provider value={{
+                socket,
+                bins,
+                setBins,
+                fetchBins,
+                getUser,
+                user,
+                setUser
+            }}>
+                {children}
+            </SocketContext.Provider>
+        );
+    };

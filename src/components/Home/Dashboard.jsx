@@ -38,10 +38,11 @@ export default function Dashboard() {
   //   fetchBins();
   //   // eslint-disable-next-line react-hooks/exhaustive-deps
   // }, []);
+  const safeBins = Array.isArray(bins) ? bins : [];
 
   const cards = [
-    { title: "Total Bins", value: bins.length, img: "wastebin.png" },
-    { title: "Full Bins", value: bins.filter(bin => bin.status === 'full').length, img: "fullbin.png" },
+    { title: "Total Bins", value: safeBins.length, img: "wastebin.png" },
+    { title: "Full Bins", value: safeBins.filter(bin => bin.status === 'full').length, img: "fullbin.png" },
     { title: "Collections Today", value: 6, img: "truck.png" },
     { title: "Active Alerts", value: 4, img: "alert.png" }
   ]
