@@ -11,6 +11,7 @@ import Login from './components/LoginPage/Login'
 import SettingsPage from './components/Settings/SettingsPage'
 import Bell from './components/Notifications/Bell'
 import AlertNotification from './components/AlertNotification/AlertNotification'
+import Search from './components/Navigation/Search'
 
 function App() {
   const [alert, setAlert] = useState(null);
@@ -40,6 +41,7 @@ function App() {
             <Route path='/reports' element={<Reports showAlert={showAlert} />} />
             <Route path='/settings' element={<SettingsPage showAlert={showAlert} />} />
             <Route path='/alerts' element={<Bell showAlert={showAlert} />} />
+            <Route path='/search' element={<Search showAlert={showAlert} />} />
           </Route>
 
         </Routes>

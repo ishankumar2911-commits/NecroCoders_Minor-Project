@@ -9,6 +9,12 @@ function Navbar() {
     const navigate = useNavigate();
     const [search, setSearch] = React.useState("");
 
+    const handleSearch = (e) => {
+        e.preventDefault();
+        if (search.trim() === "") return;
+        navigate(`/search?q=${encodeURIComponent(search)}`);
+    }
+
     return (
         <div>
             <nav className="navbar navbar-expand-lg " style={{ border: 'none', position: 'fixed', top: 0, left: 0, right: 0, zIndex: '1000', height: '5rem', backgroundColor: "#f8f9fa", borderBottom: "1px solid #ddd" }}>
@@ -50,7 +56,7 @@ function Navbar() {
                                     placeholder="Search"
                                     aria-label="Search"
                                     value={search}
-                                    onChange={(e)=>{setSearch(e.target.value)}}
+                                    onChange={(e) => { setSearch(e.target.value) }}
                                     style={{ borderRadius: "50px", paddingLeft: "35px" }}
                                 />
 
@@ -65,12 +71,12 @@ function Navbar() {
                                     }}
                                 ></i>
                             </div>
-                            <button className="btn btn-outline-success mx-3" type="submit" >Search</button>
+                            <button className="btn btn-outline-success mx-3" type="submit" onClick={handleSearch}>Search</button>
                         </form>
 
                         <div className="nav-user-options" style={{ marginLeft: '1rem', display: 'flex', alignItems: 'center', marginRight: '1rem', cursor: 'pointer' }} >
-                            <i className="fa-regular fa-bell me-5" style={{ fontSize: '1.25rem' }} onClick={()=>{navigate('/alerts')}}></i>
-                            <i className="fa-solid fa-gear me-5" style={{ fontSize: '1.25rem' }} onClick={()=>{navigate('/settings')}}></i>
+                            <i className="fa-regular fa-bell me-5" style={{ fontSize: '1.25rem' }} onClick={() => { navigate('/alerts') }}></i>
+                            <i className="fa-solid fa-gear me-5" style={{ fontSize: '1.25rem' }} onClick={() => { navigate('/settings') }}></i>
                             <div
                                 onClick={showProfileModal ? () => setShowProfileModal(false) : () => setShowProfileModal(true)}
                                 style={{

@@ -171,7 +171,7 @@ font-weight:bold;
 
 .staff-row:hover td {
   background: #f9fff9;
-  border-bottom: none; 
+  border-bottom: 2px solid #25671E; 
 }
 
 .staff-row:hover td:first-child {
