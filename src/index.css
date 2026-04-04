@@ -79,6 +79,7 @@ code {
 
 .staff-page{
 padding:2rem;
+overflow: visible;
 }
 
 .staff-stats{
@@ -113,7 +114,7 @@ width:100%;
 border-collapse:collapse;
 background:white;
 border-radius:10px;
-overflow:hidden;
+overflow:visible !important;
 }
 
 .staff-table th{
@@ -153,4 +154,32 @@ font-weight:bold;
   transform: scale(1.01);
   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
   outline: 2px solid #25671E;
+}
+
+.staff-row {
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+.staff-row:hover {
+  /* transform: scale(1.01); */
+  box-shadow: 0 0 0 2px #25671E, 0 2px 8px rgba(0,0,0,0.1);
+  /* outline: 2px solid #25671E; */
+}
+.staff-row td {
+  background: white;
+}
+
+.staff-row:hover td {
+  background: #f9fff9;
+  border-bottom: none; 
+}
+
+.staff-row:hover td:first-child {
+  border-top-left-radius: 10px;
+  border-bottom-left-radius: 10px;
+}
+
+.staff-row:hover td:last-child {
+  border-top-right-radius: 10px;
+  border-bottom-right-radius: 10px;
 }

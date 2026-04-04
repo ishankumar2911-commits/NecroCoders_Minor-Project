@@ -3,10 +3,10 @@ import React from "react";
 
 export default function BinStatusCard({ bins }) {
 
-  const getColor = (status) => {
-    if (status === "empty") return "#2ecc71"; // green
-    if (status === "half-full"|| status==="half") return "#f1c40f";
-    if (status === "full") return "#e74c3c"; // red
+  const getColor = (binFill) => {
+    if (binFill <= 30 && binFill >=0) return "#2ecc71"; // green
+    if (binFill > 30 && binFill < 70) return "#f1c40f"; // yellow
+    if (binFill >= 70) return "#e74c3c"; // red
     return "#bdc3c7"; // default gray
   };
   // const bins = [
@@ -46,7 +46,7 @@ export default function BinStatusCard({ bins }) {
 
             <span
               style={{
-                background: getColor(bin.status),
+                background: getColor(Math.max(0, (bin.currentFillLevel/bin.capacity ) * 100)),
                 color: "white",
                 padding: "2px 10px",
                 borderRadius: "20px",
@@ -70,7 +70,7 @@ export default function BinStatusCard({ bins }) {
               style={{
                 width: `${Math.min(100, Math.max(0, (bin.currentFillLevel/bin.capacity ) * 100))}%`,
                 height: "100%",
-                background: getColor(bin.status)
+                background: getColor(Math.max(0, (bin.currentFillLevel/bin.capacity ) * 100))
               }}
             ></div>
           </div>
