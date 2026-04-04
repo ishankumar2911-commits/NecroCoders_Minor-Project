@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 function Navbar() {
     const [showProfileModal, setShowProfileModal] = React.useState(false);
     const navigate = useNavigate();
+    const [search, setSearch] = React.useState("");
 
     return (
         <div>
@@ -48,6 +49,8 @@ function Navbar() {
                                     type="search"
                                     placeholder="Search"
                                     aria-label="Search"
+                                    value={search}
+                                    onChange={(e)=>{setSearch(e.target.value)}}
                                     style={{ borderRadius: "50px", paddingLeft: "35px" }}
                                 />
 

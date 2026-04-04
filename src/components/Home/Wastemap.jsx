@@ -1,169 +1,128 @@
-import { MapContainer, TileLayer, Marker, Popup, Polyline } from "react-leaflet";
-import L from "leaflet";
-import React from "react";
-
+import React, { useEffect, useRef } from "react";
 
 export default function WasteMap({ bins }) {
-  React.useEffect(() => {
-    console.log("Bins in WasteMap:", bins);
-  }, [bins]);
+  const mapRef = useRef(null);
+  const markersRef = useRef([]);
+  const polylineRef = useRef(null);
 
-  const binData = [
-    { id: 1, position: [28.3058, 77.0478], status: "empty" },
-    { id: 2, position: [28.3065, 77.0486], status: "half" },
-    { id: 3, position: [28.3049, 77.0465], status: "full" },
-  ];
+  const API_KEY = process.env.REACT_APP_MAPS_API_KEY;
 
-  // const truckRoute = [
-  //   [28.3058, 77.0478],
-  //   [28.3065, 77.0486],
-  //   [28.3049, 77.0465],
-  // ];
+  useEffect(() => {
+    if (!API_KEY) return console.error("API KEY missing");
 
-  const getColor = (status) => {
-    if (status === "empty") return "green";
-    if (status === "half" || status === "half-full") return "orange";
-    if (status === "full") return "red";
-  };
+    const loadMap = () => {
+      if (mapRef.current || !document.getElementById("map")) return;
+      const map = new window.mappls.Map("map", {
+        center: { lat: 28.4595, lng: 76.9025 },
+        zoom: 15,
+      });
+      mapRef.current = map;
+    };
 
-  const createIcon = (color) =>
-    new L.DivIcon({
-      className: "",
-      html: `<div style="
-        width:18px;
-        height:18px;
-        border-radius:50%;
-        background:${color};
-        border:2px solid white;
-      "></div>`,
-    });
+    if (window.mappls) {
+      setTimeout(loadMap, 0);
+    } else {
+      const script = document.createElement("script");
+      script.src = `https://apis.mappls.com/advancedmaps/api/${API_KEY}/map_sdk?layer=vector&v=3.0`;
+      script.async = true;
+      script.onload = () => setTimeout(loadMap, 0);
+      document.body.appendChild(script);
+    }
+  }, [API_KEY]);
 
-  if (!bins || bins.length === 0) {
-    return <p>Loading map...</p>;
-  }
   const getLatLng = (bin) => {
     const [lng, lat] = bin.locationCoordinates.coordinates;
-    return [lat, lng];
+    return { lat, lng };
   };
 
-  const fullBins = bins.filter((bin) => bin.status === "full");
-
-  const getMapCenter = (bins) => {
-    if (!bins || bins.length === 0) return [28.2712, 77.0679]; // fallback (KR Mangalam)
-
-    let totalLat = 0;
-    let totalLng = 0;
-
-    bins.forEach((bin) => {
-      const [lng, lat] = bin.locationCoordinates.coordinates;
-      totalLat += lat;
-      totalLng += lng;
-    });
-
-    return [totalLat / bins.length, totalLng / bins.length];
-  };
-
-  const getZoomLevel = (bins) => {
-    if (!bins || bins.length === 0) return 15;
-
-    let minLat = Infinity, maxLat = -Infinity;
-    let minLng = Infinity, maxLng = -Infinity;
-
-    bins.forEach((bin) => {
-      const [lng, lat] = bin.locationCoordinates.coordinates;
-
-      minLat = Math.min(minLat, lat);
-      maxLat = Math.max(maxLat, lat);
-      minLng = Math.min(minLng, lng);
-      maxLng = Math.max(maxLng, lng);
-    });
-
-    const latDiff = maxLat - minLat;
-    const lngDiff = maxLng - minLng;
-    const maxDiff = Math.max(latDiff, lngDiff);
-
-    // Adjust zoom based on spread
-    if (maxDiff < 0.002) return 19;
-    if (maxDiff < 0.005) return 18;
-    if (maxDiff < 0.01) return 17;
-    if (maxDiff < 0.05) return 15;
-    return 11;
+  const getMarkerUrl = (fillLevel) => {
+    const level = typeof fillLevel === 'string' ? parseInt(fillLevel) : fillLevel;
+    if (level < 30) return "url(https://cdn-icons-png.flaticon.com/128/14090/14090313.png)";
+    if (level < 70) return "url(https://cdn-icons-png.flaticon.com/128/14035/14035451.png)";
+    return "url(https://cdn-icons-png.flaticon.com/128/14090/14090313.png)";
   };
 
   const getOptimizedRoute = (binsList) => {
-    if (binsList.length === 0) return [];
-
+    if (!binsList || binsList.length === 0) return [];
     const remaining = [...binsList];
     const route = [];
-
-    // Start from first bin
     let current = remaining.shift();
     route.push(getLatLng(current));
 
     while (remaining.length > 0) {
       let nearestIndex = 0;
       let minDist = Infinity;
-
-      const [lat1, lng1] = getLatLng(current);
-
-      remaining.forEach((bin, index) => {
-        const [lat2, lng2] = getLatLng(bin);
-
-        const dist = Math.sqrt(
-          Math.pow(lat2 - lat1, 2) + Math.pow(lng2 - lng1, 2)
-        );
-
+      const { lat: lat1, lng: lng1 } = getLatLng(current);
+      remaining.forEach((bin, idx) => {
+        const { lat: lat2, lng: lng2 } = getLatLng(bin);
+        const dist = Math.pow(lat2 - lat1, 2) + Math.pow(lng2 - lng1, 2);
         if (dist < minDist) {
           minDist = dist;
-          nearestIndex = index;
+          nearestIndex = idx;
         }
       });
-
       current = remaining.splice(nearestIndex, 1)[0];
       route.push(getLatLng(current));
     }
-
     return route;
   };
 
-  const truckRoute = getOptimizedRoute(fullBins);
-  return (
-    <div>
-      <MapContainer
-        center={getMapCenter(bins)}
-        zoom={getZoomLevel(bins)}
-        style={{ height: "500px", width: "100%", borderRadius: "10px" }}
-      >
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !bins?.length) return;
 
-        <TileLayer
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        />
+    // Remove old markers
+    markersRef.current.forEach((m) => m.remove());
+    markersRef.current = [];
 
-        {/* BIN MARKERS */}
-        {bins.map((bin) => {
-          const [lng, lat] = bin.locationCoordinates.coordinates;
-          return (
-            <Marker
-              key={bin._id}
-              position={[lat, lng]}
-              icon={createIcon(getColor(bin.status))}
-            >
-              {console.log("Rendering marker for bin:", bin)}
-              <Popup>
-                Bin {bin.binCode} <br />
-                Bin Location: {bin.location} <br />
-                Fill Level: {bin.currentFillLevel} / {bin.capacity} <br />
-                Status: {bin.status}
-              </Popup>
-            </Marker>
-          );
-        })}
+    // Remove old polyline
+    if (polylineRef.current) {
+      polylineRef.current.remove();
+      polylineRef.current = null;
+    }
 
-        {/* TRUCK ROUTE */}
-        <Polyline positions={truckRoute} color="blue" />
+    // Add markers
+    bins.forEach((bin) => {
+      console.log(bin.locationCoordinates.coordinates);
+      const { lat, lng } = getLatLng(bin);
 
-      </MapContainer>
+      // Create marker element
+      const el = document.createElement("div");
+      el.style.width = "20px";
+      el.style.height = "20px";
+      el.style.backgroundImage = getMarkerUrl(bin.fillLevel);
+      el.style.backgroundSize = "cover";
+      el.style.cursor = "pointer";
 
-    </div>
-  );
-}
+      const marker = new window.mappls.Marker({
+        map,
+        position: { lat, lng },
+        element: el,
+      });
+
+      // Override the background image with fill-level based URL
+      el.style.backgroundImage = getMarkerUrl(bin.fillLevel);
+
+      // Draw polyline only for full bins
+      const fullBins = bins.filter((b) => b.status === "full");
+      const route = getOptimizedRoute(fullBins);
+      if (route.length > 1) {
+        polylineRef.current = new window.mappls.Polyline({
+          map,
+          path: route,
+          strokeColor: "blue",
+          strokeWeight: 4,
+        });
+      }
+  
+      markersRef.current.push(marker);
+    });
+
+    // Center map
+    const { lat: centerLat, lng: centerLng } = getLatLng(bins[0]);
+    map.setCenter({ lat: centerLat, lng: centerLng });
+    map.setZoom(15);
+    }, [bins]);
+  
+    return <div id="map" style={{ height: "500px", width: "100%", borderRadius: "10px" }} />;
+  }

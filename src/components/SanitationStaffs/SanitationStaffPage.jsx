@@ -3,14 +3,14 @@ import React from "react";
 
 function SanitationStaffPage({ showAlert }) {
 
-  const staff = [
-    { id: "SW101", name: "Amit Kumar", area: "Sector 5 Bins", tasks: 24, status: "Present" },
-    { id: "SW102", name: "Riya Sharma", area: "Market Area", tasks: 19, status: "Present" },
-    { id: "SW103", name: "Sunil Mehta", area: "Bus Stand", tasks: 0, status: "Absent" },
-    { id: "SW104", name: "Kavita Rao", area: "Hospital Road", tasks: 15, status: "Present" }
-  ];
+  // const staff = [
+  //   { id: "SW101", name: "Amit Kumar", area: "Sector 5 Bins", tasks: 24, status: "Present" },
+  //   { id: "SW102", name: "Riya Sharma", area: "Market Area", tasks: 19, status: "Present" },
+  //   { id: "SW103", name: "Sunil Mehta", area: "Bus Stand", tasks: 0, status: "Absent" },
+  //   { id: "SW104", name: "Kavita Rao", area: "Hospital Road", tasks: 15, status: "Present" }
+  // ];
 
-  const [activeBinId, setActiveBinId] = React.useState(null);
+  
   const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || "http://localhost:5000";
   const [staffs, setStaffs] = React.useState([]);
   const [activeDropdown, setActiveDropdown] = React.useState(null);
