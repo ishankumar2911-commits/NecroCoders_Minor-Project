@@ -87,7 +87,7 @@ export default function WasteMap({ bins }) {
     if (maxDiff < 0.005) return 8;
     if (maxDiff < 0.01) return 5;
     if (maxDiff < 0.05) return 3;
-    return 11;
+    return 1;
   };
 
   const getOptimizedRoute = (binsList) => {
