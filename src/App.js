@@ -43,6 +43,7 @@ function App() {
     return (
       <div style={styles.container}>
         <div style={styles.spinner}></div>
+        
       </div>
     );
   }
@@ -92,8 +93,8 @@ const styles = {
   spinner: {
     width: "50px",
     height: "50px",
-    border: "6px solid #d4f5d4",
-    borderTop: "6px solid #28a745", // 🌱 green
+    border: "6px solid #6aed6a",
+    borderTop: "6px solid #02390f", // 🌱 green
     borderRadius: "50%",
     animation: "spin 1s linear infinite"
   }

@@ -10,9 +10,10 @@ function Navbar() {
     const navigate = useNavigate();
     const [search, setSearch] = React.useState("");
     const { user, setUser } = useSocket();
+    const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || "http://localhost:5000";
 
     const handleLogout = async () => {
-        await fetch("http://localhost:5000/api/auth/logout", {
+        await fetch(`${BACKEND_URL}/api/auth/logout`, {
             method: "GET",
             credentials: "include"
         });

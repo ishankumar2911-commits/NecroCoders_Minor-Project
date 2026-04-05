@@ -90,7 +90,7 @@ function BinStatusPage({ showAlert }) {
 
   const sendMessage = async () => {
     try {
-      const response = await fetch("http://localhost:5000/api/sms/send-sms", {
+      const response = await fetch(`${BACKEND_URL}/api/sms/send-sms`, {
         method: "POST",
         credentials: "include",
         headers: {

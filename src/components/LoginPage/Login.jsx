@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 
 function Login({showAlert}) {
+  const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || "http://localhost:5000";
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -12,7 +13,7 @@ function Login({showAlert}) {
   }
 
   const handleOutlookLogin = () => {
-    window.location.href = "http://localhost:5000/auth/microsoft";
+    window.location.href = `${BACKEND_URL}/auth/microsoft`;
     if (window.location.href.includes("error=access_denied")) {
       showAlert("Microsoft login failed. Please try again.", "danger");
     }else {
