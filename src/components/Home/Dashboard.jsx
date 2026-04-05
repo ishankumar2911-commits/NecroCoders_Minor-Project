@@ -44,8 +44,8 @@ export default function Dashboard() {
   const cards = [
     { title: "Total Bins", value: safeBins.length, img: "wastebin.png" },
     { title: "Full Bins", value: safeBins.filter(bin => bin.status === 'full').length, img: "fullbin.png" },
-    { title: "Collections Today", value: 6, img: "truck.png" },
-    { title: "Active Alerts", value: 4, img: "alert.png" }
+    { title: "Collections Today", value: 0, img: "truck.png" },
+    { title: "Active Alerts", value: 2, img: "alert.png" }
   ]
 
   const statusCount = { full: 0, half: 0, empty: 0 };
