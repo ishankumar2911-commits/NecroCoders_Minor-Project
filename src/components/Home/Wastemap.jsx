@@ -83,11 +83,11 @@ export default function WasteMap({ bins }) {
     const maxDiff = Math.max(latDiff, lngDiff);
 
     // Adjust zoom based on spread
-    if (maxDiff < 0.002) return 10;
-    if (maxDiff < 0.005) return 8;
-    if (maxDiff < 0.01) return 5;
-    if (maxDiff < 0.05) return 3;
-    return 1;
+    if (maxDiff < 0.002) return 15;
+    if (maxDiff < 0.005) return 12;
+    if (maxDiff < 0.01) return 10;
+    if (maxDiff < 0.05) return 5;
+    return 3;
   };
 
   const getOptimizedRoute = (binsList) => {
