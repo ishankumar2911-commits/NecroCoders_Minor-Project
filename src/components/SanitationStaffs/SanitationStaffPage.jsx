@@ -20,13 +20,97 @@ function SanitationStaffPage({ showAlert }) {
   const [availableBins, setAvailableBins] = React.useState([]);
   const [selectedBins, setSelectedBins] = React.useState([]);
   const [newStaffPhone, setNewStaffPhone] = React.useState("");
+  const [showAssignBinsModal, setShowAssignBinsModal] = React.useState(false);
+  const [selectedZone, setSelectedZone] = React.useState("");
+  const [zones, setZones] = React.useState([]); // fetch unique zones from your backend
+
+  React.useEffect(() => {
+    const fetchZones = async () => {
+      try {
+        const res = await fetch(`${BACKEND_URL}/api/zones/`, {
+          method: "GET",
+          credentials: "include",
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+          setZones(data);
+          console.log("Fetched zones:", data);
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    fetchZones();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  React.useEffect(() => {
+    if (selectedZone && showAssignBinsModal) {
+      console.log(selectedZone);
+      async function fetchUnassignedBins() {
+        try {
+          const res = await fetch(`${BACKEND_URL}/api/zones/zone-bins?zone=${selectedZone}`, {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            credentials: "include",
+          });
+          const data = await res.json();
+          console.log(res);
+          setAvailableBins(data);
+        } catch (err) {
+          console.error(err);
+          setAvailableBins([]);
+        }
+      }
+
+      fetchUnassignedBins();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [showAssignBinsModal, selectedZone]);
+
+  const handleAssignBins = async () => {
+    if (!activeStaffId || selectedBins.length === 0) {
+      showAlert("Please select bins", "error");
+      return;
+
+    }
+
+    const res = await fetch(`${BACKEND_URL}/api/staffs/${activeStaffId}/assign-bins`, {
+      method: "PUT",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ assignedBins: selectedBins })
+    });
+    console.log(res);
+    if (res.ok) {
+      showAlert("Bins assigned successfully", "success");
+      setShowAssignBinsModal(false);
+      console.log("Selected bins for assignment:", selectedBins);
+      setSelectedBins([]);
+      setActiveStaffId(null);
+      setSelectedZone("");
+      // Refresh staff data
+      const staffRes = await fetch(`${BACKEND_URL}/api/staffs`, { credentials: "include" });
+      const data = await staffRes.json();
+      setStaffs(data);
+    } else {
+      showAlert("Failed to assign bins", "error");
+      setSelectedBins([]);
+      setSelectedZone("");
+    }
+  };
 
   const handleAddStaff = async (e) => {
     e.preventDefault();
 
     const response = await fetch(`${BACKEND_URL}/api/staffs`, {
       method: "POST",
-      include: "credentials",
+      credentials: "include",
       headers: {
         "Content-Type": "application/json"
       },
@@ -136,6 +220,19 @@ function SanitationStaffPage({ showAlert }) {
     }
   };
 
+  const binsByZone = React.useMemo(() => {
+    return availableBins.reduce((acc, bin) => {
+      const zone = bin.zone || "Unassigned";
+
+      if (!acc[zone]) {
+        acc[zone] = [];
+      }
+
+      acc[zone].push(bin);
+      return acc;
+    }, {});
+  }, [availableBins]);
+
   return (
     <div className="staff-page" style={{ marginTop: '5rem', marginLeft: '16rem', padding: '1rem' }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem" }}>
@@ -197,7 +294,8 @@ function SanitationStaffPage({ showAlert }) {
             <th>Name</th>
             <th>Allocation</th>
             <th>Tasks Done</th>
-            <th>Status</th>
+            <th>Zone</th>
+            <th>Action</th>
 
           </tr>
         </thead>
@@ -233,7 +331,7 @@ function SanitationStaffPage({ showAlert }) {
                     zIndex: 1
                   }}
                 >
-                  {worker.assignedBins.length} bins ⬇
+                  {worker.assignedBins?.length || 0} bins ⬇
                 </button>
 
                 {activeDropdown === worker._id && (
@@ -251,10 +349,10 @@ function SanitationStaffPage({ showAlert }) {
                       minWidth: "200px"
                     }}
                   >
-                    {worker.assignedBins.length === 0 ? (
+                    {worker.assignedBins?.length === 0 ? (
                       <p style={{ margin: 0 }}>No bins assigned</p>
                     ) : (
-                      worker.assignedBins.map((bin) => (
+                      worker.assignedBins?.map((bin) => (
                         <div
                           key={bin._id}
                           style={{
@@ -279,14 +377,28 @@ function SanitationStaffPage({ showAlert }) {
               <td>
                 <>
                   <span className={worker.status === "Present" ? "status-present" : "status-absent"}>
-                    {worker.status}
-                    <div
-                      style={{ visibility: activeStaffId === worker._id ? "visible" : "hidden", display: "inline-block", marginLeft: "10px", cursor: "pointer" }}
-                      onClick={handleDeleteStaff.bind(null, worker._id)}>
-                      <i className="fa-solid fa-trash" style={{ fontSize: "1rem", marginLeft: "5px", color: "#dc3545" }}></i>
-                    </div>
+                    {worker.zone || 'N/A'}
                   </span>
                 </>
+              </td>
+              <td>
+                <div style={{ display: "flex", gap: "0.5rem", justifyContent: "center" }}>
+                  <div style={{ display: "inline-block", marginLeft: "10px", cursor: "pointer" }}
+                    onClick={(e) => {
+                      setShowAssignBinsModal(true);
+                      e.stopPropagation();
+                      setActiveStaffId(worker._id);
+                      setSelectedBins(worker.assignedBins?.map(b => b._id) || []);
+                    }}
+                  >
+                    <i className="fa-solid fa-pen-to-square" style={{ fontSize: "1rem", marginLeft: "5px", color: "#007bff" }}></i>
+                  </div>
+                  <div
+                    style={{ display: "inline-block", marginLeft: "10px", cursor: "pointer" }}
+                    onClick={handleDeleteStaff.bind(null, worker._id)}>
+                    <i className="fa-solid fa-trash" style={{ fontSize: "1rem", marginLeft: "5px", color: "#dc3545" }}></i>
+                  </div>
+                </div>
               </td>
             </tr>
           ))}
@@ -323,11 +435,11 @@ function SanitationStaffPage({ showAlert }) {
                 <p>Select Bins:</p>
                 {console.log("Available bins for assignment:", availableBins)} {/* Debug log */}
 
-                {availableBins.length === 0 ? (
+                {/* {availableBins?.length === 0 ? (
                   <p>No bins available</p>
                 ) : (
                   <div style={{ maxHeight: "150px", overflowY: "auto" }}>
-                    {availableBins.map((bin) => (
+                    {availableBins?.map((bin) => (
                       <label key={bin._id} style={{ display: "block" }}>
                         <input
                           type="checkbox"
@@ -338,17 +450,94 @@ function SanitationStaffPage({ showAlert }) {
                       </label>
                     ))}
                   </div>
+                )} */}
+                {Object.keys(binsByZone).length === 0 ? (
+                  <p>No bins available</p>
+                ) : (
+                  <div style={{ maxHeight: "200px", overflowY: "auto" }}>
+                    {Object.entries(binsByZone).map(([zone, bins]) => (
+                      <div key={zone} style={{ marginBottom: "10px" }}>
+
+                        {/* Zone Heading */}
+                        <p style={{
+                          fontWeight: "bold",
+                          color: "#25671E",
+                          marginBottom: "5px"
+                        }}>
+                          Zone {zone}
+                        </p>
+
+                        {/* Bins in this zone */}
+                        {bins.map((bin) => (
+                          <label key={bin._id} style={{ display: "block", marginLeft: "10px" }}>
+                            <input
+                              type="checkbox"
+                              value={bin._id}
+                              onChange={() => handleCheckboxChange(bin._id)}
+                            />
+                            {bin.binCode} - {bin.location}
+                          </label>
+                        ))}
+                      </div>
+                    ))}
+                  </div>
                 )}
               </div>
 
               <div style={{ marginTop: "1rem", display: "flex", gap: "0.5rem" }}>
                 <button type="submit">Add Staff</button>
-                <button type="button" onClick={() => setShowAddStaffModal(false)} style={{ marginLeft: "10px" }}>
+                <button type="button" onClick={() => {setShowAddStaffModal(false);setNewStaffName('');setNewStaffPhone('')}} style={{ marginLeft: "10px" }}>
                   Cancel
                 </button>
               </div>
 
             </form>
+          </div>
+        </div>
+      )}
+      {showAssignBinsModal && activeStaffId && (
+        <div className="modal">
+          <div className="modal-content">
+            <h3>Assign Bins to Staff</h3>
+
+            <div style={{ marginBottom: "10px" }}>
+              <label>Select Zone:</label>
+              <select
+                value={selectedZone}
+                onChange={(e) => setSelectedZone(e.target.value)}
+              >
+                <option value="">Select Zone</option>
+                {zones?.map((zone) => (
+                  <option key={zone} value={zone}>
+                    {zone}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {availableBins?.filter(bin => bin.zone === selectedZone).length === 0 ? (
+              <p>No unassigned bins in this zone</p>
+            ) : (
+              <div style={{ maxHeight: "150px", overflowY: "auto" }}>
+                {availableBins
+                  ?.filter(bin => bin.zone === selectedZone)
+                  ?.map((bin) => (
+                    <label key={bin._id} style={{ display: "block" }}>
+                      <input
+                        type="checkbox"
+                        value={bin._id}
+                        onChange={() => handleCheckboxChange(bin._id)}
+                      />
+                      {bin.binCode} - {bin.location}
+                    </label>
+                  ))}
+              </div>
+            )}
+
+            <div style={{ marginTop: "1rem", display: "flex", gap: "0.5rem" }}>
+              <button onClick={handleAssignBins}>Assign Selected Bins</button>
+              <button onClick={() => {setShowAssignBinsModal(false); setSelectedBins([]); setSelectedZone('')}}>Cancel</button>
+            </div>
           </div>
         </div>
       )}
