@@ -21,6 +21,7 @@ function BinStatusPage({ showAlert }) {
   const [lat, setLat] = useState(null);
   const [lng, setLng] = useState(null);
   const [activeBinId, setActiveBinId] = useState(null);
+  const [zone, setZone] = useState("");
 
   React.useEffect(() => {
     if (navigator.geolocation) {
@@ -75,7 +76,7 @@ function BinStatusPage({ showAlert }) {
   React.useEffect(() => { console.log(selectedAuthority) }, [selectedAuthority])
   React.useEffect(() => {
 
-    fetch(`${BACKEND_URL}/api/staffs`,{credentials: "include"})
+    fetch(`${BACKEND_URL}/api/staffs`, { credentials: "include" })
       .then(res => res.json())
       .then(data => setAuthorities(data));
 
@@ -209,6 +210,7 @@ function BinStatusPage({ showAlert }) {
             <th>Fill Level</th>
             <th>Status</th>
             <th>Authority</th>
+            <th>Zone</th>
             <th>Action</th>
           </tr>
         </thead>
@@ -247,7 +249,7 @@ function BinStatusPage({ showAlert }) {
                     alignItems: "center",
                     justifyContent: "space-between",
                     gap: "0.5rem",
-                    width: '70%'
+                    width: '100%'
                   }}
                 >
                   {/* Authority Name */}
@@ -304,6 +306,7 @@ function BinStatusPage({ showAlert }) {
                   </button>
                 </div>
               </td>
+              <td style={{alignItems: "center"}}>{bin?.zone}</td>
               <td style={{ display: 'flex', gap: '0.5rem', width: "100%" }}>
                 <>
                   <button
@@ -478,6 +481,15 @@ function BinStatusPage({ showAlert }) {
                   name="capacity"
                   placeholder="Capacity"
                   max={1500}
+                  required
+                />
+                <input
+                  value={zone}
+                  onChange={(e) => setZone(e.target.value)}
+                  type="text"
+                  name="zone"
+                  placeholder="Zone (e.g. A, B, C)"
+                  maxLength={1}
                   required
                 />
                 {/* <select name="authority"

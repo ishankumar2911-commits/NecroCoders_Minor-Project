@@ -16,6 +16,7 @@
     "html2canvas": "^1.4.1",
     "jsonwebtoken": "^9.0.3",
     "jspdf": "^4.2.0",
+    "jspdf-autotable": "^5.0.7",
     "jwks-rsa": "^4.0.1",
     "leaflet": "^1.9.4",
     "mappls-web-maps": "^3.8.0",
