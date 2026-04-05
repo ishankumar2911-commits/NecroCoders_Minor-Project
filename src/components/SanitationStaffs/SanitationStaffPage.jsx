@@ -23,7 +23,6 @@ function SanitationStaffPage({ showAlert }) {
   const [showAssignBinsModal, setShowAssignBinsModal] = React.useState(false);
   const [selectedZone, setSelectedZone] = React.useState("");
   const [zones, setZones] = React.useState([]); // fetch unique zones from your backend
-  const [workerZone, setWorkerZone] = React.useState("");
 
   React.useEffect(() => {
     const fetchZones = async () => {

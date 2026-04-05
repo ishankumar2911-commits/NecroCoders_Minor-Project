@@ -6,13 +6,14 @@ function BinStatusPage({ showAlert }) {
 
   const [selectedAuthority, setSelectedAuthority] = useState(null);
   const [message, setMessage] = useState("");
-  const { socket, bins, setBins } = useSocket();
+  const { bins, setBins } = useSocket();
   const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || "http://localhost:5000";
   const [selectedBin, setSelectedBin] = useState(null);
   const [authorities, setAuthorities] = useState([]);
   const [selectedAuth, setSelectedAuth] = useState("");
   const [mode, setMode] = useState("");
   const [showAddBinModal, setShowAddBinModal] = useState(false);
+  // eslint-disable-next-line no-unused-vars
   const [createBinCode, setCreateBinCode] = useState("");
   const [location, setLocation] = useState("");
   const [capacity, setCapacity] = useState(100);
