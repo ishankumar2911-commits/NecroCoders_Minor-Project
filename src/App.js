@@ -17,9 +17,10 @@ function App() {
   const [alert, setAlert] = useState(null);
   const [user, setUser] = useState(undefined);
   const navigate = useNavigate();
+  const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || "http://localhost:5000";
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/auth/user", {
+    fetch(`${BACKEND_URL}/api/auth/user`, {
       credentials: "include"
     })
       .then(res => res.json())
@@ -28,6 +29,7 @@ function App() {
         else setUser(null);
       })
       .catch(() => setUser(null));
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {

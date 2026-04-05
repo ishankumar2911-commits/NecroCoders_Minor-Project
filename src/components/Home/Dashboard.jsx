@@ -1,17 +1,18 @@
-import { useNavigate } from 'react-router-dom';
+/* eslint-disable react-hooks/exhaustive-deps */
 import BinStatusCard from './BinStatusCard';
 import CollectionOverview from './CollectionOverview';
 import WasteMap from './Wastemap';
-import { useEffect, useState } from 'react';
+import { useEffect, } from 'react';
 import { useSocket } from '../../context/SocketContext';
+import { Pie } from 'react-chartjs-2';
 
 export default function Dashboard() {
 
-  const navigate = useNavigate();
-  const token = localStorage.getItem('token');
-  const { socket, bins, setBins, fetchBins } = useSocket();
+  //const navigate = useNavigate();
+  //const token = localStorage.getItem('token');
+  const { socket, bins, setBins, } = useSocket();
 
-  
+
 
   useEffect(() => {
     if (!socket) return;
@@ -46,6 +47,16 @@ export default function Dashboard() {
     { title: "Collections Today", value: 6, img: "truck.png" },
     { title: "Active Alerts", value: 4, img: "alert.png" }
   ]
+
+  const statusCount = { full: 0, half: 0, empty: 0 };
+  bins.forEach(bin => {
+    const fillPercent = (bin.currentFillLevel / bin.capacity) * 100;
+    if (fillPercent >= 80) statusCount.full++;
+    else if (fillPercent >= 40) statusCount.half++;
+    else statusCount.empty++;
+  });
+
+
 
   return (
 
@@ -130,6 +141,8 @@ export default function Dashboard() {
             }}
           >
             <CollectionOverview bins={bins} />
+
+            
           </div>
 
         </div>
@@ -146,7 +159,7 @@ export default function Dashboard() {
           }}
         >
 
-          <BinStatusCard bins={bins}/>
+          <BinStatusCard bins={bins} />
 
           <div
             style={{
@@ -165,7 +178,6 @@ export default function Dashboard() {
                 opacity: 0.5
               }}
             />
-
           </div>
 
         </div>

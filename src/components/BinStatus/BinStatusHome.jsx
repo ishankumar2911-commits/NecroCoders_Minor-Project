@@ -39,7 +39,7 @@ function BinStatusPage({ showAlert }) {
   }, [bins]);
 
 
-  const handleAddBin = async (location, capacity, authority) => {
+  const handleAddBin = async (location, capacity, authority, zone) => {
 
 
     const response = await fetch(`${BACKEND_URL}/api/bins/add-bin`, {
@@ -51,11 +51,13 @@ function BinStatusPage({ showAlert }) {
         location,
         capacity,
         authority,
+        zone,
         locationCoordinates: {
           type: "Point",
           coordinates: [lng, lat]
-        }
-      })
+        },
+      }),
+      credentials: "include"
     });
 
     console.log(response);
@@ -70,6 +72,8 @@ function BinStatusPage({ showAlert }) {
     setLocation("");
     setCapacity("");
     setAssignedAuthority("");
+    setZone("");
+    setAddMode("");
     showAlert("Bin added successfully", "success");
   };
 
@@ -306,7 +310,7 @@ function BinStatusPage({ showAlert }) {
                   </button>
                 </div>
               </td>
-              <td style={{alignItems: "center"}}>{bin?.zone}</td>
+              <td style={{ alignItems: "center" }}>{bin?.zone}</td>
               <td style={{ display: 'flex', gap: '0.5rem', width: "100%" }}>
                 <>
                   <button
@@ -551,7 +555,7 @@ function BinStatusPage({ showAlert }) {
             <div style={{ display: "flex", gap: "1rem" }}>
               <button style={{ marginTop: "1rem" }} onClick={(e) => {
                 e.preventDefault();
-                handleAddBin(location, capacity, assignedAuthority);
+                handleAddBin(location, capacity, assignedAuthority, zone);
               }}>
                 Add Bin
               </button>

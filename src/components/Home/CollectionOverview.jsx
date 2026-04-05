@@ -1,54 +1,50 @@
 import React from "react";
 import {
   Chart as ChartJS,
-  LineElement,
+  BarElement,
   CategoryScale,
   LinearScale,
-  PointElement,
-  Filler,
   Tooltip,
   Legend
 } from "chart.js";
-import { Line } from "react-chartjs-2";
+import { Bar } from "react-chartjs-2";
 
 ChartJS.register(
-  LineElement,
+  BarElement,
   CategoryScale,
   LinearScale,
-  PointElement,
-  Filler,
   Tooltip,
   Legend
 );
 
 function CollectionOverview({ bins }) {
 
+  // ✅ Group bins by zone
+  const zoneCounts = React.useMemo(() => {
+    const result = {};
+
+    bins.forEach((bin) => {
+      const zone = bin.zone || "Unknown";
+
+      if (!result[zone]) {
+        result[zone] = 0;
+      }
+
+      result[zone] += 1;
+    });
+
+    return result;
+  }, [bins]);
+
+  // ✅ Chart data
   const data = {
-    labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+    labels: Object.keys(zoneCounts),
     datasets: [
       {
-        label: "Collection 1",
-        data: [150, 320, 210, 340, 270, 420, 500],
-        borderColor: "#2ecc71",
-        backgroundColor: "rgba(46, 204, 113, 0.2)",
-        fill: true,
-        tension: 0.4,
-        pointRadius: 5,
-        pointBackgroundColor: "#fff",
-        pointBorderColor: "#2ecc71",
-        pointBorderWidth: 3
-      },
-      {
-        label: "Collection 2",
-        data: [100, 230, 120, 210, 170, 260, 300],
-        borderColor: "#27ae60",
-        backgroundColor: "rgba(39, 174, 96, 0.15)",
-        fill: true,
-        tension: 0.4,
-        pointRadius: 5,
-        pointBackgroundColor: "#fff",
-        pointBorderColor: "#27ae60",
-        pointBorderWidth: 3
+        label: "Number of Bins",
+        data: Object.values(zoneCounts),
+        backgroundColor: "#2ecc71",
+        borderRadius: 6
       }
     ]
   };
@@ -56,28 +52,26 @@ function CollectionOverview({ bins }) {
   const options = {
     responsive: true,
     plugins: {
-      legend: {
-        display: false
-      }
+      legend: { display: false }
     },
     scales: {
       x: {
-        grid: {
-          display: false
-        }
+        grid: { display: false }
       },
       y: {
-        grid: {
-          color: "#eee"
-        }
+        beginAtZero: true,
+        grid: { color: "#eee" }
       }
     }
   };
 
   return (
     <div style={{ width: "100%", background: "#fff", padding: "20px", borderRadius: "10px" }}>
-      <h4>Collection Overview</h4>
-      <Line data={data} options={options} />
+      <h4>Zone-wise Bin Count</h4>
+      <Bar data={data} options={options} />
+      <a style={{ fontSize: "12px", color: "#555", marginTop: "10px" }} href="/reports">
+        View More
+      </a>
     </div>
   );
 }

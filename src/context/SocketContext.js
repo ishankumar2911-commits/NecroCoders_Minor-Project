@@ -2,6 +2,7 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 import { io } from "socket.io-client";
 
 const SocketContext = createContext();
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || "http://localhost:5000";
 
 // named export
 export const useSocket = () => {
@@ -25,7 +26,7 @@ export const SocketProvider = ({ children }) => {
 
     const fetchBins = async () => {
         try {
-            const res = await fetch("http://localhost:5000/api/bins", {
+            const res = await fetch(`${BACKEND_URL}/api/bins`, {
                 credentials: "include",
                 headers: {
                     "Content-Type": "application/json",
@@ -42,8 +43,8 @@ export const SocketProvider = ({ children }) => {
     };
 
     const getUser = async () => {
-        const res = await fetch("http://localhost:5000/api/auth/user", {
-            credentials: "include" // 🔥 VERY IMPORTANT
+        const res = await fetch(`${BACKEND_URL}/api/auth/user`, {
+            credentials: "include" 
         });
 
         const data = await res.json();

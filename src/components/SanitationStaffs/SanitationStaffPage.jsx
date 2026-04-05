@@ -23,6 +23,7 @@ function SanitationStaffPage({ showAlert }) {
   const [showAssignBinsModal, setShowAssignBinsModal] = React.useState(false);
   const [selectedZone, setSelectedZone] = React.useState("");
   const [zones, setZones] = React.useState([]); // fetch unique zones from your backend
+  const [workerZone, setWorkerZone] = React.useState("");
 
   React.useEffect(() => {
     const fetchZones = async () => {
@@ -364,7 +365,7 @@ function SanitationStaffPage({ showAlert }) {
                           <p style={{ margin: 0, fontSize: "0.9rem", color: "#555" }}>
                             Status:{" "}
                             <span style={{ color: bin.status === "full" ? "#dc3545" : "#28a745" }}>
-                              {bin.status.charAt(0).toUpperCase() + bin.status.slice(1)}
+                              {bin?.status?.charAt(0).toUpperCase() + bin.status.slice(1)}
                             </span>
                           </p>
                         </div>
@@ -375,11 +376,12 @@ function SanitationStaffPage({ showAlert }) {
               </td>
               <td>{worker.completedTasks}</td>
               <td>
-                <>
-                  <span className={worker.status === "Present" ? "status-present" : "status-absent"}>
-                    {worker.zone || 'N/A'}
-                  </span>
-                </>
+                <span>
+                  {worker.assignedBins?.length > 0
+                    ? [...new Set(worker?.assignedBins?.map(bin => bin.zone))].join(", ")
+                    : "N/A"}
+                </span>
+                {console.log(worker.assignedBins)}
               </td>
               <td>
                 <div style={{ display: "flex", gap: "0.5rem", justifyContent: "center" }}>
@@ -486,7 +488,7 @@ function SanitationStaffPage({ showAlert }) {
 
               <div style={{ marginTop: "1rem", display: "flex", gap: "0.5rem" }}>
                 <button type="submit">Add Staff</button>
-                <button type="button" onClick={() => {setShowAddStaffModal(false);setNewStaffName('');setNewStaffPhone('')}} style={{ marginLeft: "10px" }}>
+                <button type="button" onClick={() => { setShowAddStaffModal(false); setNewStaffName(''); setNewStaffPhone('') }} style={{ marginLeft: "10px" }}>
                   Cancel
                 </button>
               </div>
@@ -536,7 +538,7 @@ function SanitationStaffPage({ showAlert }) {
 
             <div style={{ marginTop: "1rem", display: "flex", gap: "0.5rem" }}>
               <button onClick={handleAssignBins}>Assign Selected Bins</button>
-              <button onClick={() => {setShowAssignBinsModal(false); setSelectedBins([]); setSelectedZone('')}}>Cancel</button>
+              <button onClick={() => { setShowAssignBinsModal(false); setSelectedBins([]); setSelectedZone('') }}>Cancel</button>
             </div>
           </div>
         </div>
